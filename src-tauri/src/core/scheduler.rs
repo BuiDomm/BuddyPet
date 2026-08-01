@@ -10,7 +10,8 @@ use uuid::Uuid;
 use super::{
     ActionManifest, ActiveStreakTracker, ActivitySnapshot, BehaviorCategory, EpisodePlan,
     EpisodeRecord, EpisodeTrigger, FullscreenState, Intensity, LogicalPoint, LogicalRect,
-    MonitorSnapshot, RendererEvent, RuntimeStateV1, SessionState, SettingsError, SettingsV1,
+    MonitorSnapshot, PetId, PowerMode, RendererEvent, RuntimeStateV1, SessionState, SettingsError,
+    SettingsV1,
 };
 
 const STARTUP_GRACE: Duration = Duration::from_secs(5 * 60);
@@ -478,18 +479,22 @@ impl BehaviorDirector {
             }
             RendererEvent::Dragged { event_id, anchor } => {
                 self.phase = DirectorPhase::Reaction;
-                if let Some(active) = self.active.as_mut() {
+                let relocate_to = if let Some(active) = self.active.as_mut() {
                     active.phase_started_at = now;
-                    if let Some(anchor) = anchor.filter(|candidate| {
+                    let validated = anchor.filter(|candidate| {
                         rect_inside(*candidate, active.work_area) && candidate.area() > 0
-                    }) {
+                    });
+                    if let Some(anchor) = validated {
                         active.plan.anchor_rect = anchor;
                     }
-                }
+                    validated
+                } else {
+                    None
+                };
                 vec![DirectorCommand::React {
                     event_id,
                     reaction: ReactionKind::DragReleased,
-                    relocate_to: None,
+                    relocate_to,
                 }]
             }
             RendererEvent::Completed { .. } => {
@@ -632,7 +637,7 @@ impl BehaviorDirector {
         ) {
             return Some(SafetyBlock::Fullscreen);
         }
-        if nonnegative_elapsed(context.now, self.safe_since) < STARTUP_GRACE {
+        if !tutorial && nonnegative_elapsed(context.now, self.safe_since) < STARTUP_GRACE {
             return Some(SafetyBlock::StartupOrResumeGrace);
         }
         if Duration::from_millis(context.activity.last_input_age_ms) >= INPUT_RECENCY_REQUIRED {
@@ -755,17 +760,28 @@ impl BehaviorDirector {
             None
         };
         let seed = self.rng.random::<u64>();
+        let motion_path = choose_motion_path(
+            monitor.work_area,
+            anchor_rect,
+            pointer,
+            usize::try_from(seed % 4).unwrap_or_default(),
+        );
         let plan = EpisodePlan {
             event_id: Uuid::new_v4().to_string(),
             trigger,
             pet_id: pet,
             action_id: action.id.clone(),
+            line_key: action.line_key.clone(),
             monitor_id: monitor.id.clone(),
             anchor_rect,
+            motion_path,
+            intro_duration_ms: intro_duration_for_pet(pet, self.settings.reduce_motion),
             capture_rect,
             locale: self.settings.locale,
             tone: self.settings.tone,
             seed,
+            reduce_motion: self.settings.reduce_motion,
+            power_saver: context.activity.power_mode == PowerMode::BatterySaver,
         };
         Ok((plan, monitor.work_area, action.line_key.clone()))
     }
@@ -882,6 +898,105 @@ fn category_enabled(category: BehaviorCategory, settings: &SettingsV1) -> bool {
         BehaviorCategory::CursorPlay => settings.behavior_toggles.cursor_play,
         BehaviorCategory::Ambient => true,
     }
+}
+
+fn intro_duration_for_pet(pet: PetId, reduce_motion: bool) -> u32 {
+    if reduce_motion {
+        return 220;
+    }
+    match pet {
+        PetId::Goat10 => 2_100,
+        PetId::Camel7 => 2_300,
+        PetId::MemeCat => 1_900,
+        PetId::Shiba => 1_700,
+    }
+}
+
+/// Builds a short native-window route from a monitor edge to the safe anchor.
+/// Candidate edges are rotated by the episode seed and rejected if sampled
+/// window bounds would cross the user's current pointer.
+fn choose_motion_path(
+    work: LogicalRect,
+    anchor: LogicalRect,
+    pointer: LogicalPoint,
+    variation: usize,
+) -> Vec<LogicalRect> {
+    let left = i64::from(work.x);
+    let top = i64::from(work.y);
+    let right = left + i64::from(work.width);
+    let bottom = top + i64::from(work.height);
+    let width = i64::from(anchor.width);
+    let height = i64::from(anchor.height);
+    let to_i32 = |value: i64| {
+        i32::try_from(value.clamp(i64::from(i32::MIN), i64::from(i32::MAX))).unwrap_or_default()
+    };
+
+    let candidate = |edge: usize| {
+        let (start_x, start_y, inside_x, inside_y) = match edge {
+            0 => (
+                left - width + 28,
+                i64::from(anchor.y),
+                left,
+                i64::from(anchor.y),
+            ),
+            1 => (
+                right - 28,
+                i64::from(anchor.y),
+                right - width,
+                i64::from(anchor.y),
+            ),
+            2 => (
+                i64::from(anchor.x),
+                top - height + 24,
+                i64::from(anchor.x),
+                top,
+            ),
+            _ => (
+                i64::from(anchor.x),
+                bottom - 24,
+                i64::from(anchor.x),
+                bottom - height,
+            ),
+        };
+        vec![
+            LogicalRect {
+                x: to_i32(start_x),
+                y: to_i32(start_y),
+                ..anchor
+            },
+            LogicalRect {
+                x: to_i32(inside_x),
+                y: to_i32(inside_y),
+                ..anchor
+            },
+            anchor,
+        ]
+    };
+
+    (0..4)
+        .map(|offset| candidate((variation + offset) % 4))
+        .find(|path| !motion_path_crosses_pointer(path, pointer))
+        .unwrap_or_else(|| vec![anchor])
+}
+
+fn motion_path_crosses_pointer(path: &[LogicalRect], pointer: LogicalPoint) -> bool {
+    path.windows(2).any(|segment| {
+        let [from, to] = segment else {
+            return false;
+        };
+        (0..=24).any(|step| {
+            let progress = f64::from(step) / 24.0;
+            let x = f64::from(from.x) + (f64::from(to.x) - f64::from(from.x)) * progress;
+            let y = f64::from(from.y) + (f64::from(to.y) - f64::from(from.y)) * progress;
+            LogicalRect {
+                x: x.round() as i32,
+                y: y.round() as i32,
+                width: from.width,
+                height: from.height,
+            }
+            .contains(pointer)
+        })
+    })
 }
 
 fn choose_monitor(monitors: &[MonitorSnapshot], pointer: LogicalPoint) -> Option<&MonitorSnapshot> {
@@ -1085,8 +1200,8 @@ mod tests {
             ],
             category: BehaviorCategory::FakeDamage,
             duration_ms: 8_000,
-            rive_artboard: "Goat".into(),
-            state_machine: "Buddy".into(),
+            motion_rig: "Goat".into(),
+            motion_controller: "FreeMotionDirector".into(),
             inputs: Vec::new(),
             markers: vec!["entranceComplete".into(), "mischiefComplete".into()],
             hit_regions: vec![HitRegion {
@@ -1106,6 +1221,10 @@ mod tests {
     fn settings() -> SettingsV1 {
         SettingsV1 {
             locale: Locale::En,
+            // These scheduler fixtures use the Goat-only `action` helper;
+            // pin the selection so changing the product default does not
+            // silently change what each scheduler test exercises.
+            selected_pets: vec![PetId::Goat10],
             tone: Tone::Kind,
             quiet_hours: QuietHours {
                 enabled: false,
@@ -1161,6 +1280,62 @@ mod tests {
     }
 
     #[test]
+    fn episode_plan_carries_motion_and_power_preferences_to_renderers() {
+        let at = now();
+        let mut next_settings = settings();
+        next_settings.reduce_motion = true;
+        let mut director = BehaviorDirector::new(
+            next_settings,
+            RuntimeStateV1::default(),
+            at - TimeDelta::minutes(6),
+            42,
+        )
+        .unwrap();
+        let mut low_power_activity = activity();
+        low_power_activity.power_mode = PowerMode::BatterySaver;
+        let monitors = [monitor()];
+        let actions = [action("headbutt", "goat.taunt")];
+
+        let commands = director
+            .summon(&context(at, &low_power_activity, &monitors, &actions))
+            .unwrap();
+        let [DirectorCommand::Start { plan }] = commands.as_slice() else {
+            panic!("expected an episode to start");
+        };
+        assert!(plan.reduce_motion);
+        assert!(plan.power_saver);
+        assert_eq!(plan.intro_duration_ms, 220);
+        assert_eq!(plan.motion_path.last(), Some(&plan.anchor_rect));
+    }
+
+    #[test]
+    fn active_computer_use_can_trigger_a_roaming_episode_without_app_or_document_data() {
+        let at = now();
+        let active = activity();
+        let pointer = active.pointer.unwrap();
+        let monitors = [monitor()];
+        let actions = [action("headbutt", "goat.taunt")];
+        let runtime = RuntimeStateV1 {
+            next_random_at: Some(at),
+            ..RuntimeStateV1::default()
+        };
+        let mut director =
+            BehaviorDirector::new(settings(), runtime, at - TimeDelta::minutes(6), 17).unwrap();
+
+        let commands = director
+            .tick(&context(at, &active, &monitors, &actions))
+            .unwrap();
+        let [DirectorCommand::Start { plan }] = commands.as_slice() else {
+            panic!("active input should permit a random visit");
+        };
+        assert!(plan.motion_path.len() >= 2);
+        assert_eq!(plan.motion_path.last(), Some(&plan.anchor_rect));
+        assert!(!motion_path_crosses_pointer(&plan.motion_path, pointer));
+        assert_eq!(plan.intro_duration_ms, 2_100);
+        assert_eq!(plan.line_key, "goat.taunt");
+    }
+
+    #[test]
     fn startup_grace_and_hard_safety_gates_block_manual_summon() {
         let at = now();
         let activity = activity();
@@ -1190,6 +1365,36 @@ mod tests {
                 .unwrap(),
             vec![DirectorCommand::Blocked {
                 reason: SafetyBlock::SessionUnavailable
+            }]
+        );
+    }
+
+    #[test]
+    fn scripted_tutorial_bypasses_startup_grace_but_not_lock_safety() {
+        let at = now();
+        let activity = activity();
+        let monitors = [monitor()];
+        let actions = [action("headbutt", "goat.taunt")];
+        let mut director =
+            BehaviorDirector::new(settings(), RuntimeStateV1::default(), at, 1).unwrap();
+        assert!(matches!(
+            director
+                .start_tutorial(&context(at, &activity, &monitors, &actions))
+                .unwrap()
+                .as_slice(),
+            [DirectorCommand::Start { plan }] if plan.trigger == EpisodeTrigger::Tutorial
+        ));
+
+        let mut locked_director =
+            BehaviorDirector::new(settings(), RuntimeStateV1::default(), at, 1).unwrap();
+        let mut locked = activity;
+        locked.session_state = SessionState::Locked;
+        assert_eq!(
+            locked_director
+                .start_tutorial(&context(at, &locked, &monitors, &actions))
+                .unwrap(),
+            vec![DirectorCommand::Blocked {
+                reason: SafetyBlock::SessionUnavailable,
             }]
         );
     }
@@ -1333,6 +1538,44 @@ mod tests {
             }]
         );
         assert_eq!(director.phase(), DirectorPhase::Cooldown);
+    }
+
+    #[test]
+    fn a_valid_drop_relocates_the_native_pet_window() {
+        let at = now();
+        let activity = activity();
+        let monitors = [monitor()];
+        let actions = [action("headbutt", "goat.taunt")];
+        let mut director = ready_director(at);
+        let started = director
+            .summon(&context(at, &activity, &monitors, &actions))
+            .unwrap();
+        let event_id = match &started[0] {
+            DirectorCommand::Start { plan } => plan.event_id.clone(),
+            _ => unreachable!(),
+        };
+        let dropped = LogicalRect {
+            x: -1_850,
+            y: 700,
+            width: 280,
+            height: 220,
+        };
+
+        assert_eq!(
+            director.handle_renderer_event(
+                RendererEvent::Dragged {
+                    event_id: event_id.clone(),
+                    anchor: Some(dropped),
+                },
+                at + TimeDelta::seconds(1),
+            ),
+            vec![DirectorCommand::React {
+                event_id,
+                reaction: ReactionKind::DragReleased,
+                relocate_to: Some(dropped),
+            }]
+        );
+        assert_eq!(director.active_plan().unwrap().anchor_rect, dropped);
     }
 
     #[test]

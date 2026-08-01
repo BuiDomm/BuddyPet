@@ -2,7 +2,7 @@ import type { LocaleDialogue } from "../types";
 
 export const enDialogue = {
   goat10: {
-    greeting: { kind: "Tiny warm-up, then we play.", sassy: "The number ten has entered the desktop." },
+    greeting: { kind: "I was passing by and stopped to groom the beard.", sassy: "Number ten is on. Cursor, hold your position." },
     "welcome-back": { kind: "Welcome back. I kept your corner warm.", sassy: "Back already? Good. I was running out of audience." },
     "focus-nudge": { kind: "You have been active a while. Want a tiny reset?", sassy: "Long run. Even great feet take a touchline break." },
     "break-offer": { kind: "One short break ticket, just for you.", sassy: "Official ruling: a two-minute breather." },
@@ -14,7 +14,7 @@ export const enDialogue = {
     "prank-success": { kind: "Ta-da! The pixels are perfectly fine.", sassy: "Clean finish. Your real work never felt a thing." },
     "prank-fallback": { kind: "No screen capture today, so here is a cartoon trick.", sassy: "The pixels stayed private; imagination takes the shot." },
     caught: { kind: "You caught me mid-dribble.", sassy: "A rare interception. Enjoy it." },
-    "first-click": { kind: "Baa! Gentle hands—I am moving.", sassy: "Foul! Fine, I will take five steps back." },
+    "first-click": { kind: "Baa! Easy—the beard was freshly styled.", sassy: "Yellow card for that finger! I am switching sides." },
     "second-click": { kind: "All right, I am heading out.", sassy: "Two clicks. The referee has spoken." },
     "pet-start": { kind: "Oh. That is actually lovely.", sassy: "Excellent technique. You may continue." },
     "pet-thanks": { kind: "Thank you. I feel much calmer.", sassy: "Proper appreciation for desktop talent." },
@@ -23,12 +23,12 @@ export const enDialogue = {
     dismiss: { kind: "No problem. I will give you space.", sassy: "I leave undefeated—and quietly." },
     "less-of-this": { kind: "Got it. I will do this one less often.", sassy: "Not your favorite move. Removed from the starting lineup." },
     snoozed: { kind: "Rest easy. I will wait until the snooze ends.", sassy: "Bench time accepted. I will be ready later." },
-    "manual-summon": { kind: "You called? I am happy to visit.", sassy: "A special appearance, requested by popular demand." },
+    "manual-summon": { kind: "You called? I ran all the way in from the screen edge.", sassy: "You summoned number ten by name. Excellent taste." },
     "meeting-mode": { kind: "Meeting Mode is on. I will stay quiet.", sassy: "Professional face activated. I am off the pitch." },
     goodbye: { kind: "See you later. Take care of yourself.", sassy: "A graceful exit, naturally." }
   },
   camel7: {
-    greeting: { kind: "Hello. Ready for a steady little stride?", sassy: "Seven is here. Posture just improved." },
+    greeting: { kind: "That was a long run. Let me recover here with style.", sassy: "Seven has arrived. The screen looks sharper already." },
     "welcome-back": { kind: "Welcome back. I saved you a sunny spot.", sassy: "You returned. Excellent judgment." },
     "focus-nudge": { kind: "That was a long active stretch. Time to breathe?", sassy: "Impressive stamina. A confident pause will keep it sharp." },
     "break-offer": { kind: "Here is a small break ticket for the road.", sassy: "Take the break. Even icons pace themselves." },
@@ -40,7 +40,7 @@ export const enDialogue = {
     "prank-success": { kind: "All clean again. Not a real mark anywhere.", sassy: "Flawless recovery. I planned the wipe too." },
     "prank-fallback": { kind: "Capture is unavailable, so I brought a drawn prop.", sassy: "No capture? My stagecraft needs no assistance." },
     caught: { kind: "Oh—you saw that little fold.", sassy: "Caught? I prefer ‘admired at close range.’" },
-    "first-click": { kind: "Hrrm! I will step over safely.", sassy: "Contact! I remain composed, obviously." },
+    "first-click": { kind: "Hey! Not the hair—I am hopping over there.", sassy: "Contact detected. Fortunately, my form remains perfect." },
     "second-click": { kind: "Understood. I am leaving now.", sassy: "A second click ends the exhibition." },
     "pet-start": { kind: "That is soothing. Thank you.", sassy: "Yes, precisely there. Excellent service." },
     "pet-thanks": { kind: "I appreciate the gentle moment.", sassy: "Calm suits me. It probably suits you too." },
@@ -49,12 +49,12 @@ export const enDialogue = {
     dismiss: { kind: "Of course. I will make room.", sassy: "I know when to leave an audience wanting more." },
     "less-of-this": { kind: "Noted. You will see less of this trick.", sassy: "That move is demoted. Standards matter." },
     snoozed: { kind: "I will rest until you are ready again.", sassy: "A scheduled recovery period. Very professional." },
-    "manual-summon": { kind: "You called for me? Here I am.", sassy: "Requested personally. As expected." },
+    "manual-summon": { kind: "You called? I may have sprinted here a little too fast.", sassy: "A personal summons. Entirely reasonable." },
     "meeting-mode": { kind: "Meeting Mode is on. I will not interrupt.", sassy: "Business time. I will save the spectacle." },
     goodbye: { kind: "Goodbye for now. Travel gently.", sassy: "Seven exits with perfect posture." }
   },
   memeCat: {
-    greeting: { kind: "Hi. I brought quiet cat energy.", sassy: "I have arrived. The desktop may relax now." },
+    greeting: { kind: "Hi. I came to inspect the keyboard's warmest spot.", sassy: "Cat has arrived. Continue pretending to be busy." },
     "welcome-back": { kind: "You are back. I did not sit on anything important.", sassy: "Returned to your natural habitat: open tabs." },
     "focus-nudge": { kind: "Long active streak. Want to blink at something far away?", sassy: "You have been staring. I am a cat and even I noticed." },
     "break-offer": { kind: "I made you a tiny break card.", sassy: "Your next task is loafing. Two minutes." },
@@ -66,7 +66,7 @@ export const enDialogue = {
     "prank-success": { kind: "Done. No real pixels were harmed.", sassy: "Excellent slap. Minimal effort, maximum theater." },
     "prank-fallback": { kind: "No capture, so I am playing with a pretend card.", sassy: "Privacy won. I can still knock over the prop." },
     caught: { kind: "Oh. You saw the paw.", sassy: "Evidence remains circumstantial." },
-    "first-click": { kind: "Mrrp! I will hop out of the way.", sassy: "You poked the talent. Bold." },
+    "first-click": { kind: "Mrrp! Surprise pokes cost one judgmental stare.", sassy: "You clicked the lead actor? I am changing seats." },
     "second-click": { kind: "Okay, vanishing now.", sassy: "Two clicks. Cat dismissed itself." },
     "pet-start": { kind: "Purr permission granted.", sassy: "Acceptable. Continue the tribute." },
     "pet-thanks": { kind: "That was nice. Thank you.", sassy: "You have earned one approving blink." },
@@ -75,12 +75,12 @@ export const enDialogue = {
     dismiss: { kind: "I will give you your space back.", sassy: "Fine. I was leaving in three hours anyway." },
     "less-of-this": { kind: "Understood. Less of that from now on.", sassy: "That prank has lost paw privileges." },
     snoozed: { kind: "Nap time. I will wait.", sassy: "Finally, a feature designed for cats." },
-    "manual-summon": { kind: "You called the cat? Hello.", sassy: "Summoned successfully. Snacks remain optional." },
+    "manual-summon": { kind: "You called the cat? I came, but I do not take assignments.", sassy: "Summon complete. Service fee: one corner of the screen." },
     "meeting-mode": { kind: "Meeting Mode on. I will loaf off-screen.", sassy: "I have muted my opinions." },
     goodbye: { kind: "Bye for now. Slow blink.", sassy: "The cat has concluded this session." }
   },
   shiba: {
-    greeting: { kind: "Hi! I am ready for one tiny adventure.", sassy: "Shiba online. Fun levels are looking healthy." },
+    greeting: { kind: "Hi! I ran in so fast I nearly forgot the brakes.", sassy: "Shiba online. Who let that cursor run loose?" },
     "welcome-back": { kind: "You are back! My tail remembered you.", sassy: "There you are. I kept the good energy running." },
     "focus-nudge": { kind: "You have been active a long time. Walk-and-stretch moment?", sassy: "Big streak! Now perform the legendary stand-up move." },
     "break-offer": { kind: "I dug up a fresh break ticket for you.", sassy: "Rare loot: permission to do absolutely nothing." },
@@ -92,7 +92,7 @@ export const enDialogue = {
     "prank-success": { kind: "All done! Everything real is untouched.", sassy: "Perfect zoom. Zero documents chased." },
     "prank-fallback": { kind: "Capture did not work, so I brought cartoon dirt.", sassy: "No pixels borrowed. I packed my own chaos." },
     caught: { kind: "Oops! You found my digging spot.", sassy: "This hole was here when I arrived." },
-    "first-click": { kind: "Yip! I will bounce somewhere safer.", sassy: "Boop detected! Emergency hop activated." },
+    "first-click": { kind: "Yip! Surprise boop—I am bouncing somewhere safer.", sassy: "Nose alarm! Activating the emergency finger-dodge." },
     "second-click": { kind: "Got it! I am heading out.", sassy: "Double boop means tactical retreat." },
     "pet-start": { kind: "Yes please! Gentle pats are wonderful.", sassy: "Tail speed increased by one hundred percent." },
     "pet-thanks": { kind: "Thank you! That made my whole day.", sassy: "Five-star pats. No notes." },
@@ -101,7 +101,7 @@ export const enDialogue = {
     dismiss: { kind: "Okay! I will give you room.", sassy: "Retreating with dignity and one tiny bork." },
     "less-of-this": { kind: "I hear you. I will do that less often.", sassy: "That trick goes back in the toy box." },
     snoozed: { kind: "Nap break! I will come back later.", sassy: "Snooze accepted. Dream zoomies commencing." },
-    "manual-summon": { kind: "You called! What are we doing?", sassy: "Instant Shiba delivery complete." },
+    "manual-summon": { kind: "You called! I started running before you finished.", sassy: "Express Shiba delivery complete. No returns." },
     "meeting-mode": { kind: "Meeting Mode on. I will be very quiet.", sassy: "Serious ears deployed. No borks." },
     goodbye: { kind: "Bye! Take a good little break soon.", sassy: "Shiba out. Tail still operational." }
   }

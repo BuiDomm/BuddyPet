@@ -32,6 +32,13 @@
   "bundle": {
     "active": true,
     "targets": ["dmg", "nsis"],
+    "icon": [
+      "icons-v2/32x32.png",
+      "icons-v2/128x128.png",
+      "icons-v2/128x128@2x.png",
+      "icons-v2/icon.icns",
+      "icons-v2/icon.ico"
+    ],
     "category": "Lifestyle",
     "shortDescription": "A playful desktop companion that reminds you to take breaks.",
     "longDescription": "BuddyPet is a privacy-first desktop companion that plays harmless visual pranks and encourages healthy breaks.",
@@ -43,7 +50,7 @@
     "windows": {
       "nsis": {
         "installMode": "currentUser",
-        "installerIcon": null
+        "installerIcon": "icons-v2/icon.ico"
       },
       "webviewInstallMode": {
         "type": "downloadBootstrapper",

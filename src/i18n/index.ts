@@ -8,6 +8,7 @@ const baseOptions = {
   resources,
   supportedLngs: [...LOCALES],
   fallbackLng: "en",
+  keySeparator: false,
   defaultNS: "translation",
   ns: ["translation"],
   load: "languageOnly",

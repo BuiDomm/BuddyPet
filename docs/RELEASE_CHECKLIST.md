@@ -12,7 +12,8 @@
 
 ## Content and accessibility gates
 
-- [ ] Final Rive rigs and original SFX binaries pass manifest validation.
+- [ ] Final separated Free Motion Rig layers and original SFX binaries pass `npm run check:assets` and manifest validation.
+- [ ] Every downloadable voice pack passes checksum, attribution, offline synthesis, and native listening review for its locale.
 - [ ] Reduce Motion replaces run/jump/shake; no strobe or jump scare remains.
 - [ ] CJK font fallback, wrapping, pseudo-localization, and all four native reviews pass.
 - [ ] Legal/art review approves the #10 goat and #7 camel designs.
@@ -25,4 +26,3 @@
 - [ ] Authenticode-sign the Windows x64 NSIS installer.
 - [ ] Verify a signed N−1 → N update on physical machines and never apply it during an episode.
 - [ ] Publish the reviewed privacy policy and permission copy.
-

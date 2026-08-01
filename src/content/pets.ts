@@ -6,10 +6,10 @@ export const PETS = [
     label: { vi: "Dê #10", en: "Goat #10", ko: "염소 #10", ja: "ヤギ #10" },
     species: "goat",
     jerseyNumber: 10,
-    defaultSelected: true,
+    defaultSelected: false,
     palette: ["#D9F2FF", "#F8FCFF", "#386CB4"],
-    artboard: "Goat10",
-    stateMachine: "BuddyDirector",
+    motionRig: "Goat10",
+    motionController: "FreeMotionDirector",
     sfxCues: ["goat-bleat", "goat-gasp", "goat-cry", "goat-nibble", "goat-impact", "goat-step", "ball-tap", "soft-pop"]
   },
   {
@@ -19,8 +19,8 @@ export const PETS = [
     jerseyNumber: 7,
     defaultSelected: false,
     palette: ["#D9A55B", "#F4D29D", "#123C69"],
-    artboard: "Camel7",
-    stateMachine: "BuddyDirector",
+    motionRig: "Camel7",
+    motionController: "FreeMotionDirector",
     sfxCues: ["camel-grumble", "camel-gasp", "camel-cry", "camel-chew", "camel-spit", "camel-wipe", "camel-step", "soft-pop"]
   },
   {
@@ -28,10 +28,10 @@ export const PETS = [
     label: { vi: "Mèo Meme", en: "Meme Cat", ko: "밈 고양이", ja: "ミーム猫" },
     species: "cat",
     jerseyNumber: null,
-    defaultSelected: false,
+    defaultSelected: true,
     palette: ["#F0B45F", "#FFF0D4", "#5B4337"],
-    artboard: "MemeCat",
-    stateMachine: "BuddyDirector",
+    motionRig: "MemeCat",
+    motionController: "FreeMotionDirector",
     sfxCues: ["cat-mew", "cat-yowl", "cat-purr", "cat-slap", "cat-scratch", "cat-loaf", "cat-step", "soft-pop"]
   },
   {
@@ -41,8 +41,8 @@ export const PETS = [
     jerseyNumber: null,
     defaultSelected: false,
     palette: ["#D87735", "#FFF1D5", "#4A3327"],
-    artboard: "ShibaInu",
-    stateMachine: "BuddyDirector",
+    motionRig: "ShibaInu",
+    motionController: "FreeMotionDirector",
     sfxCues: ["shiba-bork", "shiba-yip", "shiba-whine", "shiba-dig", "shiba-tug", "shiba-zoom", "shiba-step", "soft-pop"]
   }
 ] as const satisfies readonly PetDefinition[];

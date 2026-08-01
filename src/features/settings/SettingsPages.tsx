@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "../../components/Badge";
 import { BuddyCharacter, type BuddyMood } from "../../components/BuddyCharacter";
@@ -6,8 +6,10 @@ import { Button } from "../../components/Button";
 import { Icon, type IconName } from "../../components/Icon";
 import { PageHeader } from "../../components/PageHeader";
 import { Toggle } from "../../components/Toggle";
-import { BUDDIES, INTENSITY_META, minutesToTime, timeToMinutes } from "../domain/defaults";
-import type { ActionRequest, AppSnapshot, BuddyId, Intensity, NavigationSection, SettingsV1, Tone } from "../domain/types";
+import { BUDDIES, DEFAULT_BUDDY, DEFAULT_BUDDY_ACTION_ID, INTENSITY_META, minutesToTime, timeToMinutes } from "../domain/defaults";
+import { desktopBridge } from "../bridge/desktopBridge";
+import { minutesUntilLocalTomorrow } from "../domain/time";
+import { DEFAULT_BUDDY_ID, type ActionRequest, type AppSnapshot, type BuddyId, type Intensity, type Locale, type NavigationSection, type SettingsV1, type Tone, type VoicePackStatus } from "../domain/types";
 
 interface PageProps {
   snapshot: AppSnapshot;
@@ -31,24 +33,28 @@ export function SettingsPage({ section, ...props }: SettingsPageProps) {
   return <HomePage {...props} />;
 }
 
-function formatStreak(seconds: number) {
+function formatStreak(seconds: number, hoursShort: string, minutesShort: string) {
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
-  return hours ? `${hours}h ${minutes % 60}m` : `${minutes}m`;
+  return hours ? `${hours} ${hoursShort} ${minutes % 60} ${minutesShort}` : `${minutes} ${minutesShort}`;
 }
 
-function formatClock(value: string | null, fallback: string) {
+function formatClock(value: string | null, fallback: string, locale: Locale) {
   if (!value) return fallback;
-  return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+  return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+}
+
+function formatMegabytes(bytes: number, locale: Locale) {
+  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(bytes / 1_048_576)} MB`;
 }
 
 function HomePage({ snapshot, onPatch, onAction, onNavigate }: PageProps) {
   const { t } = useTranslation();
-  const buddy = BUDDIES.find((item) => item.id === snapshot.settings.selectedPets[0]) ?? BUDDIES[0]!;
+  const buddy = BUDDIES.find((item) => item.id === snapshot.settings.selectedPets[0]) ?? DEFAULT_BUDDY;
   const meta = INTENSITY_META[snapshot.settings.intensity];
   const nextVisit = snapshot.runtime.snoozedUntil
-    ? formatClock(snapshot.runtime.snoozedUntil, "—")
-    : formatClock(snapshot.runtime.nextEpisodeAt, t("dashboard.whenReady", { defaultValue: "When ready" }));
+    ? formatClock(snapshot.runtime.snoozedUntil, "—", snapshot.settings.locale)
+    : formatClock(snapshot.runtime.nextEpisodeAt, t("dashboard.whenReady", { defaultValue: "When ready" }), snapshot.settings.locale);
 
   return (
     <div className="page page--home">
@@ -80,7 +86,7 @@ function HomePage({ snapshot, onPatch, onAction, onNavigate }: PageProps) {
       </section>
 
       <section className="stat-grid">
-        <article className="stat-card stat-card--focus"><span className="stat-card__icon"><Icon name="bolt"/></span><div><small>{t("dashboard.focusStreak", { defaultValue: "ACTIVE STREAK" })}</small><strong>{formatStreak(snapshot.runtime.activeStreakSeconds)}</strong><p>{t("dashboard.focusHelp", { defaultValue: "Only idle time is measured" })}</p></div><div className="mini-progress"><span style={{ width: `${Math.min(100, snapshot.runtime.activeStreakSeconds / (meta.focusMinutes * 60) * 100)}%` }} /></div></article>
+        <article className="stat-card stat-card--focus"><span className="stat-card__icon"><Icon name="bolt"/></span><div><small>{t("dashboard.focusStreak", { defaultValue: "ACTIVE STREAK" })}</small><strong>{formatStreak(snapshot.runtime.activeStreakSeconds, t("common.hoursShort", { defaultValue: "h" }), t("common.minutesShort", { defaultValue: "min" }))}</strong><p>{t("dashboard.focusHelp", { defaultValue: "Only idle time is measured" })}</p></div><div className="mini-progress"><span style={{ width: `${Math.min(100, snapshot.runtime.activeStreakSeconds / (meta.focusMinutes * 60) * 100)}%` }} /></div></article>
         <article className="stat-card"><span className="stat-card__icon stat-card__icon--blue"><Icon name="clock"/></span><div><small>{snapshot.runtime.snoozedUntil ? t("dashboard.snoozedUntil", { defaultValue: "SNOOZED UNTIL" }) : t("dashboard.nextChance", { defaultValue: "NEXT CHANCE" })}</small><strong>{nextVisit}</strong><p>{t("dashboard.neverGuaranteed", { defaultValue: "Only if it’s a good moment" })}</p></div></article>
         <article className="stat-card"><span className="stat-card__icon stat-card__icon--orange"><Icon name="sparkles"/></span><div><small>{t("dashboard.dailyBudget", { defaultValue: "DAILY MISCHIEF" })}</small><strong>{snapshot.runtime.dailyEpisodeCount} <em>/ {meta.daily}</em></strong><p>{t("dashboard.budgetHelp", { defaultValue: "Manual visits don’t count" })}</p></div></article>
       </section>
@@ -95,9 +101,9 @@ function HomePage({ snapshot, onPatch, onAction, onNavigate }: PageProps) {
         <div className="panel-card next-break-card">
           <div className="card-heading"><div><h2>{t("dashboard.needSpace", { defaultValue: "Need some space?" })}</h2><p>{t("dashboard.snoozeHelp", { defaultValue: "BuddyPet won’t take it personally. Probably." })}</p></div><Icon name="coffee"/></div>
           <div className="snooze-buttons">
-            {[15, 30, 60].map((minutes) => <button type="button" key={minutes} onClick={() => void onAction({ action: "snooze", durationMinutes: minutes })}>{minutes}<small>min</small></button>)}
+            {[15, 30, 60].map((minutes) => <button type="button" key={minutes} onClick={() => void onAction({ action: "snooze", durationMinutes: minutes })}>{minutes}<small>{t("common.minutesShort", { defaultValue: "min" })}</small></button>)}
           </div>
-          <Button variant="secondary" icon="moon" onClick={() => void onAction({ action: "meeting", durationMinutes: 8 * 60 })}>{t("dashboard.quietToday", { defaultValue: "Quiet for the rest of today" })}</Button>
+          <Button variant="secondary" icon="moon" onClick={() => void onAction({ action: "snooze", durationMinutes: minutesUntilLocalTomorrow() })}>{t("dashboard.quietToday", { defaultValue: "Quiet for the rest of today" })}</Button>
         </div>
       </section>
     </div>
@@ -113,14 +119,14 @@ function BuddiesPage({ snapshot, onPatch, onNavigate }: PageProps) {
   };
   return (
     <div className="page">
-      <PageHeader eyebrow={t("buddies.eyebrow", { defaultValue: "THE MISCHIEF DEPARTMENT" })} title={t("buddies.title", { defaultValue: "Meet the crew" })} description={t("buddies.description", { defaultValue: "Enable one favorite or let the whole team rotate through your day." })} action={<Toggle compact checked={snapshot.settings.selectedPets.length > 1} onChange={(rotate) => onPatch({ selectedPets: rotate ? BUDDIES.map((buddy) => buddy.id) : [snapshot.settings.selectedPets[0] ?? "goat10"] })} label={t("buddies.rotate", { defaultValue: "Rotate buddies" })} />} />
+      <PageHeader eyebrow={t("buddies.eyebrow", { defaultValue: "THE MISCHIEF DEPARTMENT" })} title={t("buddies.title", { defaultValue: "Meet the crew" })} description={t("buddies.description", { defaultValue: "Enable one favorite or let the whole team rotate through your day." })} action={<Toggle compact checked={snapshot.settings.selectedPets.length > 1} onChange={(rotate) => onPatch({ selectedPets: rotate ? BUDDIES.map((buddy) => buddy.id) : [snapshot.settings.selectedPets[0] ?? DEFAULT_BUDDY_ID] })} label={t("buddies.rotate", { defaultValue: "Rotate buddies" })} />} />
       <div className="crew-grid">
         {BUDDIES.map((buddy) => {
           const enabled = selected.includes(buddy.id);
           return (
             <article className={`crew-card ${enabled ? "is-enabled" : ""}`} style={{ "--choice-accent": buddy.accent, "--choice-soft": buddy.softAccent } as React.CSSProperties} key={buddy.id}>
               <div className="crew-card__art"><span className="crew-card__number">{buddy.number ? `#${buddy.number}` : "✦"}</span><BuddyCharacter buddyId={buddy.id} size="medium" mood="happy" /></div>
-              <div className="crew-card__body"><div className="crew-card__title"><div><h2>{buddy.name}</h2><p>{buddy.tagline}</p></div><button className={`round-check ${enabled ? "is-on" : ""}`} type="button" aria-label={enabled ? t("buddies.disable", { defaultValue: "Disable {{name}}", name: buddy.name }) : t("buddies.enable", { defaultValue: "Enable {{name}}", name: buddy.name })} onClick={() => toggleBuddy(buddy.id)}><Icon name="check" size={15}/></button></div><div className="action-chips">{buddy.actions.map((action) => <span key={action}>{t(`actions.${action}`, { defaultValue: action })}</span>)}</div></div>
+              <div className="crew-card__body"><div className="crew-card__title"><div><h2>{t(`pets.${buddy.id}.name`, { defaultValue: buddy.name })}</h2><p>{t(`pets.${buddy.id}.tagline`, { defaultValue: buddy.tagline })}</p></div><button className={`round-check ${enabled ? "is-on" : ""}`} type="button" aria-label={enabled ? t("buddies.disable", { defaultValue: "Disable {{name}}", name: t(`pets.${buddy.id}.name`, { defaultValue: buddy.name }) }) : t("buddies.enable", { defaultValue: "Enable {{name}}", name: t(`pets.${buddy.id}.name`, { defaultValue: buddy.name }) })} onClick={() => toggleBuddy(buddy.id)}><Icon name="check" size={15}/></button></div><div className="action-chips">{buddy.actions.map((action) => <span key={action}>{t(`actions.${action}`, { defaultValue: action })}</span>)}</div></div>
             </article>
           );
         })}
@@ -155,15 +161,15 @@ function Limit({ icon, title, text }: { icon: IconName; title: string; text: str
 
 function RoutinePage({ snapshot, onPatch, onAction }: PageProps) {
   const { t } = useTranslation();
-  const [meetingMinutes, setMeetingMinutes] = useState(60);
+  const [meetingDuration, setMeetingDuration] = useState("60");
   const intensityOptions: Intensity[] = ["gentle", "playful", "chaos"];
   return (
     <div className="page">
       <PageHeader eyebrow={t("routine.eyebrow", { defaultValue: "TIMING IS EVERYTHING" })} title={t("routine.title", { defaultValue: "Set a comfortable rhythm" })} description={t("routine.description", { defaultValue: "BuddyPet uses idle time and safety rules — never what you type or which app you use." })} />
-      <section className="panel-card settings-section"><div className="card-heading"><div><h2>{t("routine.intensity", { defaultValue: "Visit intensity" })}</h2><p>{t("routine.intensityHelp", { defaultValue: "This controls timing and daily limits, not how kind Buddy is." })}</p></div></div><div className="segmented-picker segmented-picker--three">{intensityOptions.map((intensity) => <button type="button" className={snapshot.settings.intensity === intensity ? "is-active" : ""} onClick={() => onPatch({ intensity })} key={intensity}><Icon name={intensity === "gentle" ? "moon" : intensity === "playful" ? "sparkles" : "bolt"}/><span><strong>{t(`intensity.${intensity}`, { defaultValue: intensity })}</strong><small>{INTENSITY_META[intensity].range}</small></span></button>)}</div></section>
+      <section className="panel-card settings-section"><div className="card-heading"><div><h2>{t("routine.intensity", { defaultValue: "Visit intensity" })}</h2><p>{t("routine.intensityHelp", { defaultValue: "This controls timing and daily limits, not how kind Buddy is." })}</p></div></div><div className="segmented-picker segmented-picker--three">{intensityOptions.map((intensity) => <button type="button" className={snapshot.settings.intensity === intensity ? "is-active" : ""} onClick={() => onPatch({ intensity })} key={intensity}><Icon name={intensity === "gentle" ? "moon" : intensity === "playful" ? "sparkles" : "bolt"}/><span><strong>{t(`intensity.${intensity}`, { defaultValue: intensity })}</strong><small>{INTENSITY_META[intensity].range.replace(" min", "")} {t("common.minutesShort", { defaultValue: "min" })}</small></span></button>)}</div></section>
       <div className="two-column-settings">
         <section className="panel-card settings-section"><div className="card-heading"><div><h2>{t("routine.quietHours", { defaultValue: "Quiet hours" })}</h2><p>{t("routine.quietHoursHelp", { defaultValue: "No random or focus-triggered visits overnight." })}</p></div></div><Toggle compact checked={snapshot.settings.quietHours.enabled} onChange={(enabled) => onPatch({ quietHours: { ...snapshot.settings.quietHours, enabled } })} label={snapshot.settings.quietHours.enabled ? t("common.on", { defaultValue: "On" }) : t("common.off", { defaultValue: "Off" })}/><div className="time-fields"><label>{t("routine.from", { defaultValue: "From" })}<input type="time" value={minutesToTime(snapshot.settings.quietHours.startMinute)} disabled={!snapshot.settings.quietHours.enabled} onChange={(event) => onPatch({ quietHours: { ...snapshot.settings.quietHours, startMinute: timeToMinutes(event.target.value) } })}/></label><span>→</span><label>{t("routine.to", { defaultValue: "To" })}<input type="time" value={minutesToTime(snapshot.settings.quietHours.endMinute)} disabled={!snapshot.settings.quietHours.enabled} onChange={(event) => onPatch({ quietHours: { ...snapshot.settings.quietHours, endMinute: timeToMinutes(event.target.value) } })}/></label></div></section>
-        <section className="panel-card settings-section meeting-card"><div className="card-heading"><div><h2>{t("routine.meetingMode", { defaultValue: "Meeting Mode" })}</h2><p>{t("routine.meetingHelp", { defaultValue: "Block all visits while you present or share your screen." })}</p></div><span className="meeting-icon"><Icon name="monitor"/></span></div><div className="meeting-control"><select aria-label={t("routine.meetingDuration", { defaultValue: "Meeting duration" })} value={meetingMinutes} onChange={(event) => setMeetingMinutes(Number(event.target.value))}><option value={30}>30 min</option><option value={60}>1 hour</option><option value={120}>2 hours</option><option value={480}>{t("routine.today", { defaultValue: "Rest of today" })}</option></select><Button icon="pause" onClick={() => void onAction({ action: "meeting", durationMinutes: meetingMinutes })}>{t("routine.startMeeting", { defaultValue: "Start" })}</Button></div></section>
+        <section className="panel-card settings-section meeting-card"><div className="card-heading"><div><h2>{t("routine.meetingMode", { defaultValue: "Meeting Mode" })}</h2><p>{t("routine.meetingHelp", { defaultValue: "Block all visits while you present or share your screen." })}</p></div><span className="meeting-icon"><Icon name="monitor"/></span></div><div className="meeting-control"><select aria-label={t("routine.meetingDuration", { defaultValue: "Meeting duration" })} value={meetingDuration} onChange={(event) => setMeetingDuration(event.target.value)}><option value="30">{t("routine.duration30", { defaultValue: "30 minutes" })}</option><option value="60">{t("routine.duration60", { defaultValue: "1 hour" })}</option><option value="120">{t("routine.duration120", { defaultValue: "2 hours" })}</option><option value="today">{t("routine.today", { defaultValue: "Rest of today" })}</option></select><Button icon="pause" onClick={() => void onAction({ action: "meeting", durationMinutes: meetingDuration === "today" ? minutesUntilLocalTomorrow() : Number(meetingDuration) })}>{t("routine.startMeeting", { defaultValue: "Start" })}</Button></div></section>
       </div>
       <div className="info-banner"><Icon name="shield"/><span><strong>{t("routine.automaticSafety", { defaultValue: "Automatic safety checks stay on." })}</strong> {t("routine.automaticSafetyHelp", { defaultValue: "BuddyPet also stays hidden during lock, sleep, fullscreen, and for five minutes after wake." })}</span></div>
     </div>
@@ -172,10 +178,48 @@ function RoutinePage({ snapshot, onPatch, onAction }: PageProps) {
 
 function SoundPage({ snapshot, onPatch, onAction }: PageProps) {
   const { t } = useTranslation();
+  const [voicePackState, setVoicePackState] = useState<VoicePackStatus | null>(null);
+  const voicePack = voicePackState?.locale === snapshot.settings.locale ? voicePackState : null;
+
+  useEffect(() => {
+    let disposed = false;
+    let unsubscribe: (() => void) | undefined;
+    void desktopBridge.getVoicePackStatus(snapshot.settings.locale).then((status) => {
+      if (!disposed) setVoicePackState(status);
+    });
+    void desktopBridge.subscribeVoicePack((status) => {
+      if (status.locale === snapshot.settings.locale) setVoicePackState(status);
+    }).then((off) => {
+      if (disposed) off();
+      else unsubscribe = off;
+    });
+    return () => {
+      disposed = true;
+      unsubscribe?.();
+    };
+  }, [snapshot.settings.locale]);
+
+  const installVoicePack = async () => {
+    setVoicePackState((current) => current ? { ...current, state: "downloading", error: null } : current);
+    try {
+      setVoicePackState(await desktopBridge.installVoicePack(snapshot.settings.locale));
+    } catch {
+      setVoicePackState((current) => current ? { ...current, state: "error", error: "voicePackDownloadFailed" } : current);
+    }
+  };
+  const progress = voicePack && voicePack.totalBytes > 0
+    ? Math.min(100, Math.round(voicePack.downloadedBytes / voicePack.totalBytes * 100))
+    : 0;
   return (
     <div className="page">
-      <PageHeader eyebrow={t("sound.eyebrow", { defaultValue: "BLEATS, BOOPS & DRAMA" })} title={t("sound.title", { defaultValue: "Sound and motion" })} description={t("sound.description", { defaultValue: "Keep the personality, tune the volume, and calm down the movement." })} action={<Button variant="secondary" icon="headphones" disabled={!snapshot.settings.sound} onClick={() => void onAction({ action: "previewSound" })}>{t("sound.preview", { defaultValue: "Preview sound" })}</Button>} />
-      <section className="panel-card settings-section sound-panel"><div className="sound-panel__art"><span>♪</span><span>♫</span><BuddyCharacter buddyId={snapshot.settings.selectedPets[0] ?? "goat10"} size="small" mood="happy" decorative /></div><div className="sound-panel__controls"><Toggle checked={snapshot.settings.sound} onChange={(sound) => onPatch({ sound })} label={t("sound.effects", { defaultValue: "Buddy sounds" })} description={t("sound.effectsLong", { defaultValue: "Species sounds, footsteps, impacts, and gentle break chimes." })}/><label className={`range-field ${!snapshot.settings.sound ? "is-disabled" : ""}`}><span><strong>{t("sound.volume", { defaultValue: "Volume" })}</strong><output>{snapshot.settings.soundVolume}%</output></span><input type="range" min="0" max="100" value={snapshot.settings.soundVolume} disabled={!snapshot.settings.sound} onChange={(event) => onPatch({ soundVolume: Number(event.target.value) })}/></label><div className="sound-note"><Icon name="info"/>{t("sound.noVoice", { defaultValue: "No human voice lines. Speech always appears in a readable bubble." })}</div></div></section>
+      <PageHeader eyebrow={t("sound.eyebrow", { defaultValue: "BLEATS, BOOPS & DRAMA" })} title={t("sound.title", { defaultValue: "Sound and motion" })} description={t("sound.description", { defaultValue: "Keep the personality, tune the volume, and calm down the movement." })} action={<Button variant="secondary" icon="headphones" disabled={!snapshot.settings.sound} onClick={() => void onAction({ action: "previewSound", petId: snapshot.settings.selectedPets[0] ?? DEFAULT_BUDDY_ID, text: t("sound.voicePreviewLine", { defaultValue: "Hey! Your Buddy voice is ready." }), locale: snapshot.settings.locale })}>{t("sound.preview", { defaultValue: "Preview sound" })}</Button>} />
+      <section className="panel-card settings-section sound-panel"><div className="sound-panel__art"><span>♪</span><span>♫</span><BuddyCharacter buddyId={snapshot.settings.selectedPets[0] ?? DEFAULT_BUDDY_ID} size="small" mood="happy" decorative /></div><div className="sound-panel__controls"><Toggle checked={snapshot.settings.sound} onChange={(sound) => onPatch({ sound })} label={t("sound.effects", { defaultValue: "Buddy sounds" })} description={t("sound.effectsLong", { defaultValue: "Species sounds, footsteps, impacts, and gentle break chimes." })}/><Toggle checked={snapshot.settings.behaviorToggles.voice} disabled={!snapshot.settings.sound} onChange={(voice) => onPatch({ behaviorToggles: { ...snapshot.settings.behaviorToggles, voice } })} label={t("sound.voice", { defaultValue: "Read Buddy speech aloud" })} description={t("sound.voiceHelp", { defaultValue: "Uses the offline HD voice pack when installed, with the system voice as fallback." })}/><label className={`range-field ${!snapshot.settings.sound ? "is-disabled" : ""}`}><span><strong>{t("sound.volume", { defaultValue: "Volume" })}</strong><output>{snapshot.settings.soundVolume}%</output></span><input type="range" min="0" max="100" value={snapshot.settings.soundVolume} disabled={!snapshot.settings.sound} onChange={(event) => onPatch({ soundVolume: Number(event.target.value) })}/></label><div className="sound-note"><Icon name="info"/>{t("sound.localVoice", { defaultValue: "Voice playback stays on this device and reads only the visible bubble." })}</div></div></section>
+      <section className="panel-card settings-section voice-pack-card">
+        <div className="card-heading"><div><h2>{t("sound.voicePackTitle", { defaultValue: "Offline HD voice pack" })}</h2><p>{t("sound.voicePackHelp", { defaultValue: "Download only the pack for your selected language. Nothing is sent to the cloud." })}</p></div><Badge tone={voicePack?.state === "ready" ? "success" : voicePack?.state === "error" ? "warning" : "neutral"}>{voicePack?.state === "ready" ? t("sound.voicePackReady", { defaultValue: "Installed" }) : voicePack?.state === "downloading" || voicePack?.state === "installing" ? `${progress}%` : `${t("sound.voicePackOptional", { defaultValue: "Optional" })} · ${formatMegabytes(voicePack?.totalBytes ?? 0, snapshot.settings.locale)}`}</Badge></div>
+        {(voicePack?.state === "downloading" || voicePack?.state === "installing") && <div className="voice-pack-progress"><span style={{ width: `${progress}%` }}/><small>{voicePack.state === "installing" ? t("sound.voicePackInstalling", { defaultValue: "Verifying and installing…" }) : t("sound.voicePackDownloading", { defaultValue: "Downloading securely…" })}</small></div>}
+        {voicePack?.state !== "ready" && voicePack?.state !== "downloading" && voicePack?.state !== "installing" && <Button variant="secondary" icon="download" onClick={() => void installVoicePack()}>{voicePack?.state === "error" ? t("sound.voicePackRetry", { defaultValue: "Try download again" }) : t("sound.voicePackDownload", { defaultValue: "Download voice pack" })}</Button>}
+        {voicePack && <div className={`voice-pack-details ${voicePack.state === "ready" ? "is-ready" : ""}`}><Icon name={voicePack.state === "ready" ? "check" : "info"}/><span><strong>{voicePack.name}</strong><small>{voicePack.engine} · {voicePack.license}</small><small>{t("sound.voicePackOffline", { defaultValue: "Runs locally after download; the operating-system voice remains available as fallback." })}</small></span></div>}
+      </section>
       <section className="panel-card settings-section"><div className="card-heading"><div><h2>{t("motion.title", { defaultValue: "Motion comfort" })}</h2><p>{t("motion.description", { defaultValue: "BuddyPet never uses flashes or jump-scare audio." })}</p></div></div><Toggle checked={snapshot.settings.reduceMotion} onChange={(reduceMotion) => onPatch({ reduceMotion })} label={t("motion.reduce", { defaultValue: "Reduce motion" })} description={t("motion.reduceHelp", { defaultValue: "Replace running, jumping, screen shake, and particles with short fades." })}/></section>
     </div>
   );
@@ -225,6 +269,12 @@ function AccessibilityPage({ snapshot, onPatch }: PageProps) {
         <section className="panel-card settings-section"><div className="card-heading"><span className="section-icon"><Icon name="accessibility"/></span><div><h2>{t("accessibility.motion", { defaultValue: "Visual comfort" })}</h2><p>{t("accessibility.motionHelp", { defaultValue: "Movement can be simplified without losing character." })}</p></div></div><Toggle checked={snapshot.settings.reduceMotion} onChange={(reduceMotion) => onPatch({ reduceMotion })} label={t("motion.reduce", { defaultValue: "Reduce motion" })} description={t("motion.reduceShort", { defaultValue: "Use fades and poses instead of runs, jumps, and shake." })}/><div className="always-on-setting"><span><Icon name="shield"/><span><strong>{t("accessibility.flash", { defaultValue: "Flash protection" })}</strong><small>{t("accessibility.flashHelp", { defaultValue: "Strobing and jumpscares are never used." })}</small></span></span><Badge tone="success">{t("common.alwaysOn", { defaultValue: "Always on" })}</Badge></div></section>
         <section className="panel-card settings-section"><div className="card-heading"><span className="section-icon section-icon--orange"><Icon name="keyboard"/></span><div><h2>{t("accessibility.escape", { defaultValue: "Emergency shortcut" })}</h2><p>{t("accessibility.escapeHelp", { defaultValue: "Hide everything and take a 30-minute break from BuddyPet." })}</p></div></div><div className="hotkey-display"><input key={snapshot.settings.hotkey} aria-label={t("accessibility.hotkeyInput", { defaultValue: "Global emergency shortcut" })} spellCheck={false} defaultValue={snapshot.settings.hotkey} onBlur={(event) => commitHotkey(event.currentTarget)} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }}/><Badge tone="neutral">{t("accessibility.global", { defaultValue: "Global" })}</Badge></div><p className="field-help">{t("accessibility.hotkeyNote", { defaultValue: "Use a chord such as Control+Alt+B. BuddyPet records only the shortcut itself, never what you type." })}</p></section>
       </div>
+      <section className="panel-card settings-section language-settings"><div className="card-heading"><span className="section-icon"><Icon name="globe"/></span><div><h2>{t("accessibility.language", { defaultValue: "Language & text" })}</h2><p>{t("accessibility.languageHelp", { defaultValue: "Change settings, Buddy speech, and tray labels together." })}</p></div></div><div className="language-picker">{([
+        ["vi", "VI", "Tiếng Việt"],
+        ["en", "EN", "English"],
+        ["ko", "KO", "한국어"],
+        ["ja", "JA", "日本語"],
+      ] as const satisfies readonly (readonly [Locale, string, string])[]).map(([locale, code, label]) => <button type="button" className={snapshot.settings.locale === locale ? "is-active" : ""} aria-pressed={snapshot.settings.locale === locale} onClick={() => onPatch({ locale })} key={locale}><span>{code}</span><strong>{label}</strong>{snapshot.settings.locale === locale && <Icon name="check"/>}</button>)}</div></section>
       <section className="panel-card settings-section"><div className="card-heading"><div><h2>{t("accessibility.interaction", { defaultValue: "Predictable interaction" })}</h2><p>{t("accessibility.interactionHelp", { defaultValue: "The same gestures always have the same result." })}</p></div></div><div className="gesture-grid"><Gesture symbol="↖" title={t("gestures.click", { defaultValue: "Click once" })} text={t("gestures.clickHelp", { defaultValue: "Buddy reacts and hops away." })}/><Gesture symbol="×2" title={t("gestures.double", { defaultValue: "Click again" })} text={t("gestures.doubleHelp", { defaultValue: "The visit ends immediately." })}/><Gesture symbol="♡" title={t("gestures.hold", { defaultValue: "Hold for 0.7s" })} text={t("gestures.holdHelp", { defaultValue: "Pet Buddy and soften the reaction." })}/><Gesture symbol="⋮" title={t("gestures.right", { defaultValue: "Right-click" })} text={t("gestures.rightHelp", { defaultValue: "Hide, snooze, or see less." })}/></div></section>
     </div>
   );
@@ -236,16 +286,16 @@ function Gesture({ symbol, title, text }: { symbol: string; title: string; text:
 
 function PlaygroundPage({ snapshot, onAction }: PageProps) {
   const { t } = useTranslation();
-  const [buddyId, setBuddyId] = useState<BuddyId>(snapshot.settings.selectedPets[0] ?? "goat10");
+  const [buddyId, setBuddyId] = useState<BuddyId>(snapshot.settings.selectedPets[0] ?? DEFAULT_BUDDY_ID);
   const [tone, setTone] = useState<Tone>(snapshot.settings.tone);
-  const [actionId, setActionId] = useState(BUDDIES.find((item) => item.id === buddyId)?.actions[0] ?? "headbutt");
+  const [actionId, setActionId] = useState(BUDDIES.find((item) => item.id === buddyId)?.actions[0] ?? DEFAULT_BUDDY_ACTION_ID);
   const [mood, setMood] = useState<BuddyMood>("idle");
   const [playing, setPlaying] = useState(false);
-  const buddy = useMemo(() => BUDDIES.find((item) => item.id === buddyId) ?? BUDDIES[0]!, [buddyId]);
+  const buddy = useMemo(() => BUDDIES.find((item) => item.id === buddyId) ?? DEFAULT_BUDDY, [buddyId]);
 
   const chooseBuddy = (nextBuddyId: BuddyId) => {
     setBuddyId(nextBuddyId);
-    setActionId(BUDDIES.find((item) => item.id === nextBuddyId)?.actions[0] ?? "headbutt");
+    setActionId(BUDDIES.find((item) => item.id === nextBuddyId)?.actions[0] ?? DEFAULT_BUDDY_ACTION_ID);
   };
 
   const play = () => {
@@ -262,12 +312,12 @@ function PlaygroundPage({ snapshot, onAction }: PageProps) {
       <PageHeader eyebrow={t("playground.eyebrow", { defaultValue: "NO-Consequences ZONE" })} title={t("playground.title", { defaultValue: "The mischief playground" })} description={t("playground.description", { defaultValue: "Preview a Buddy and action here. Test runs never count toward your daily limit." })} />
       <section className="playground-layout">
         <div className="playground-stage">
-          <div className="playground-window"><div className="fake-toolbar"><i/><i/><i/><span>quarterly-plan.txt</span></div><div className="playground-document"><span/><span/><span/><span/><span/></div><div className={`playground-effect effect-${actionId}`}/></div>
+          <div className="playground-window"><div className="fake-toolbar"><i/><i/><i/><span>{t("playground.screenSample", { defaultValue: "Any active app • browser • editor • video" })}</span></div><div className="playground-document"><span/><span/><span/><span/><span/></div><div className={`playground-effect effect-${actionId}`}/></div>
           <div className="playground-buddy"><BuddyCharacter buddyId={buddyId} size="stage" mood={mood}/><div className={`playground-bubble ${mood === "prank" || mood === "happy" ? "is-visible" : ""}`}>{tone === "sassy" ? t(`playground.lines.${buddyId}.sassy`, { defaultValue: "Interesting pixels. Mine now." }) : t(`playground.lines.${buddyId}.kind`, { defaultValue: "Tiny renovation! You’re welcome." })}</div></div>
           <span className="playground-floor"/>
         </div>
         <aside className="playground-controls panel-card">
-          <div><label>{t("playground.buddy", { defaultValue: "Buddy" })}</label><div className="mini-buddy-picker">{BUDDIES.map((item) => <button type="button" className={buddyId === item.id ? "is-active" : ""} aria-label={item.name} onClick={() => chooseBuddy(item.id)} key={item.id}><BuddyCharacter buddyId={item.id} size="tiny" decorative/></button>)}</div></div>
+          <div><label>{t("playground.buddy", { defaultValue: "Buddy" })}</label><div className="mini-buddy-picker">{BUDDIES.map((item) => <button type="button" className={buddyId === item.id ? "is-active" : ""} aria-label={t(`pets.${item.id}.name`, { defaultValue: item.name })} onClick={() => chooseBuddy(item.id)} key={item.id}><BuddyCharacter buddyId={item.id} size="tiny" decorative/></button>)}</div></div>
           <div><label htmlFor="playground-action">{t("playground.action", { defaultValue: "Signature action" })}</label><select id="playground-action" value={actionId} onChange={(event) => setActionId(event.target.value)}>{buddy.actions.map((action) => <option value={action} key={action}>{t(`actions.${action}`, { defaultValue: action.replace(/([A-Z])/g, " $1") })}</option>)}</select></div>
           <div><label>{t("playground.tone", { defaultValue: "Speech tone" })}</label><div className="small-segments"><button type="button" className={tone === "kind" ? "is-active" : ""} onClick={() => setTone("kind")}>{t("tone.kindShort", { defaultValue: "Sweet" })}</button><button type="button" className={tone === "sassy" ? "is-active" : ""} onClick={() => setTone("sassy")}>{t("tone.sassyShort", { defaultValue: "Sassy" })}</button></div></div>
           <Button size="large" icon="play" disabled={playing} onClick={play}>{playing ? t("playground.playing", { defaultValue: "Making trouble…" }) : t("playground.preview", { defaultValue: "Preview on stage" })}</Button>

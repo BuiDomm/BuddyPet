@@ -26,13 +26,13 @@ export const behaviorGroupSchema = z.enum(BEHAVIOR_GROUPS);
 export const triggerTagSchema = z.enum(TRIGGER_TAGS);
 export const sfxCueIdSchema = z.enum(SFX_CUE_IDS);
 
-// Rust's canonical wire type is i32 logical coordinates. Artboards in v1 stay
-// within this tighter bound to catch accidental physical-screen coordinates.
-const logicalCoordinateSchema = z.number().int().min(-8_192).max(8_192);
+// Hit polygons use normalized artboard coordinates and are scaled to the native
+// pet window at runtime. Screen coordinates never belong in this content file.
+const normalizedCoordinateSchema = z.number().int().min(0).max(1_000);
 
 export const pointSchema = z.strictObject({
-  x: logicalCoordinateSchema,
-  y: logicalCoordinateSchema
+  x: normalizedCoordinateSchema,
+  y: normalizedCoordinateSchema
 });
 
 export const hitRegionSchema = z
@@ -64,8 +64,8 @@ export const actionManifestSchema = z
     triggerTags: z.array(triggerTagSchema).min(1),
     category: behaviorGroupSchema,
     durationMs: z.number().int().positive().max(12_000),
-    riveArtboard: z.string().trim().min(1).max(64),
-    stateMachine: z.string().trim().min(1).max(64),
+    motionRig: z.string().trim().min(1).max(64),
+    motionController: z.string().trim().min(1).max(64),
     inputs: z.array(z.string().trim().min(1).max(64)),
     markers: z.array(z.string().trim().min(1).max(64)),
     hitRegions: z.array(hitRegionSchema).min(1),
@@ -81,7 +81,7 @@ export const actionManifestSchema = z
 
     const uniqueInputs = new Set(action.inputs);
     if (uniqueInputs.size !== action.inputs.length) {
-      context.addIssue({ code: "custom", message: "Rive input names must be unique", path: ["inputs"] });
+      context.addIssue({ code: "custom", message: "Motion input names must be unique", path: ["inputs"] });
     }
     const uniqueMarkers = new Set(action.markers);
     if (uniqueMarkers.size !== action.markers.length) {

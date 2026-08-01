@@ -30,6 +30,7 @@ export type IconName =
   | "headphones"
   | "keyboard"
   | "rotate"
+  | "download"
   | "minus"
   | "plus";
 
@@ -63,6 +64,7 @@ const paths: Record<IconName, React.ReactNode> = {
   headphones: <><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v6H5a1 1 0 0 1-1-1v-5ZM20 14h-3v6h2a1 1 0 0 0 1-1v-5Z"/></>,
   keyboard: <><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M7 16h10"/></>,
   rotate: <><path d="M20 7v5h-5"/><path d="M18.5 16a8 8 0 1 1 1.2-7L20 12"/></>,
+  download: <><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 20h14"/></>,
   minus: <path d="M5 12h14"/>,
   plus: <><path d="M5 12h14M12 5v14"/></>,
 };

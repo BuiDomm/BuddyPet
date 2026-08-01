@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { desktopBridge } from "../features/bridge/desktopBridge";
 import { DEFAULT_SNAPSHOT } from "../features/domain/defaults";
 import type { ActionRequest, AppSnapshot, SettingsV1 } from "../features/domain/types";
+import { i18n } from "../i18n";
 
 export function useBuddyApp() {
   const [snapshot, setSnapshot] = useState<AppSnapshot>(DEFAULT_SNAPSHOT);
@@ -17,6 +18,9 @@ export function useBuddyApp() {
   const applySnapshot = useCallback((next: AppSnapshot) => {
     snapshotRef.current = next;
     setSnapshot(next);
+    if (i18n.isInitialized && i18n.resolvedLanguage !== next.settings.locale) {
+      void i18n.changeLanguage(next.settings.locale);
+    }
   }, []);
 
   useEffect(() => {
@@ -52,11 +56,13 @@ export function useBuddyApp() {
     try {
       const next = await operation;
       if (mounted.current && revision === settingsRevision.current) applySnapshot(next);
+      return true;
     } catch (error) {
       if (mounted.current && revision === settingsRevision.current) {
         applySnapshot(previous);
         setSaveError(error instanceof Error ? error.message : "settingsUpdateFailed");
       }
+      return false;
     } finally {
       pendingSettingsWrites.current -= 1;
       if (mounted.current && revision === settingsRevision.current) setSaving(false);

@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { BuddyCharacter } from "../../components/BuddyCharacter";
 import { Button } from "../../components/Button";
 import { Icon, type IconName } from "../../components/Icon";
-import { BUDDIES } from "../domain/defaults";
-import type { ActionRequest, AppSnapshot, NavigationSection, SettingsV1 } from "../domain/types";
+import { BUDDIES, DEFAULT_BUDDY } from "../domain/defaults";
+import type { ActionRequest, AppSnapshot, Locale, NavigationSection, SettingsV1 } from "../domain/types";
 import { SettingsPage } from "./SettingsPages";
 
 interface SettingsAppProps {
@@ -26,11 +26,19 @@ const NAV_ITEMS: { id: NavigationSection; icon: IconName; key: string; fallback:
   { id: "playground", icon: "play", key: "navigation.playground", fallback: "Playground" },
 ];
 
+const QUICK_LOCALES = [
+  ["vi", "Tiếng Việt"],
+  ["en", "English"],
+  ["ko", "한국어"],
+  ["ja", "日本語"],
+] as const satisfies readonly (readonly [Locale, string])[];
+
 export function SettingsApp({ snapshot, saving, saveError, onPatch, onAction }: SettingsAppProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [section, setSection] = useState<NavigationSection>("home");
   const [summoning, setSummoning] = useState(false);
-  const activeBuddy = BUDDIES.find((buddy) => buddy.id === snapshot.settings.selectedPets[0]) ?? BUDDIES[0]!;
+  const pageScroll = useRef<HTMLDivElement>(null);
+  const activeBuddy = BUDDIES.find((buddy) => buddy.id === snapshot.settings.selectedPets[0]) ?? DEFAULT_BUDDY;
 
   useEffect(() => {
     const handleHash = () => {
@@ -42,6 +50,10 @@ export function SettingsApp({ snapshot, saving, saveError, onPatch, onAction }: 
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
+  useEffect(() => {
+    if (pageScroll.current) pageScroll.current.scrollTop = 0;
+  }, [section]);
+
   const navigate = (next: NavigationSection) => {
     setSection(next);
     window.history.replaceState(null, "", `#${next}`);
@@ -50,10 +62,16 @@ export function SettingsApp({ snapshot, saving, saveError, onPatch, onAction }: 
   const summon = async () => {
     setSummoning(true);
     try {
-      await onAction({ action: "summon", petId: activeBuddy.id });
+      await onAction({ action: "previewAction", petId: activeBuddy.id, actionId: activeBuddy.actions[0] });
     } finally {
       window.setTimeout(() => setSummoning(false), 500);
     }
+  };
+
+  const chooseLocale = (event: ChangeEvent<HTMLSelectElement>) => {
+    const locale = event.target.value as Locale;
+    void i18n.changeLanguage(locale);
+    onPatch({ locale });
   };
 
   return (
@@ -75,7 +93,7 @@ export function SettingsApp({ snapshot, saving, saveError, onPatch, onAction }: 
 
         <div className="sidebar__buddy-card">
           <BuddyCharacter buddyId={activeBuddy.id} size="tiny" decorative />
-          <span><strong>{activeBuddy.name}</strong><small>{snapshot.runtime.paused ? t("status.paused", { defaultValue: "Taking a nap" }) : t("status.ready", { defaultValue: "Ready for mischief" })}</small></span>
+          <span><strong>{t(`pets.${activeBuddy.id}.name`, { defaultValue: activeBuddy.name })}</strong><small>{snapshot.runtime.paused ? t("status.paused", { defaultValue: "Taking a nap" }) : t("status.ready", { defaultValue: "Ready for mischief" })}</small></span>
           <span className={`presence-dot ${snapshot.runtime.paused ? "is-paused" : ""}`} />
         </div>
       </aside>
@@ -88,15 +106,27 @@ export function SettingsApp({ snapshot, saving, saveError, onPatch, onAction }: 
           </div>
           <div className="app-toolbar__actions">
             <span className={`save-status ${saving ? "is-saving" : ""} ${saveError ? "is-error" : ""}`} title={saveError ?? undefined}>{saving ? t("status.saving", { defaultValue: "Saving…" }) : saveError ? t("status.saveFailed", { defaultValue: "Could not save" }) : t("status.saved", { defaultValue: "Saved" })}</span>
+            <div className="quick-language">
+              <Icon name="globe" size={15}/>
+              <select
+                value={snapshot.settings.locale}
+                aria-label={t("language.quick", { defaultValue: "Change language" })}
+                onChange={chooseLocale}
+              >
+                {QUICK_LOCALES.map(([locale, label]) => (
+                  <option value={locale} key={locale}>{label}</option>
+                ))}
+              </select>
+            </div>
             <Button variant="secondary" size="small" icon={snapshot.runtime.paused ? "play" : "pause"} onClick={() => void onAction({ action: snapshot.runtime.paused ? "resume" : "pause" })}>
               {snapshot.runtime.paused ? t("common.resume", { defaultValue: "Resume" }) : t("common.pause", { defaultValue: "Pause" })}
             </Button>
             <Button size="small" icon="wand" disabled={snapshot.runtime.activeEpisode || summoning} onClick={() => void summon()}>
-              {summoning ? t("summon.calling", { defaultValue: "Calling…" }) : t("summon.now", { defaultValue: "Summon buddy" })}
+              {summoning ? t("summon.testing", { defaultValue: "Starting…" }) : t("summon.testEntrance", { defaultValue: "Test Buddy entrance" })}
             </Button>
           </div>
         </header>
-        <div className="page-scroll">
+        <div className="page-scroll" ref={pageScroll}>
           <SettingsPage section={section} snapshot={snapshot} onPatch={onPatch} onAction={onAction} onNavigate={navigate} />
         </div>
       </section>
@@ -109,7 +139,7 @@ function NavButton({ item, active, onClick, t }: { item: (typeof NAV_ITEMS)[numb
     <button type="button" className={`sidebar-link ${active ? "is-active" : ""}`} aria-current={active ? "page" : undefined} onClick={onClick}>
       <Icon name={item.icon} size={19} />
       <span>{t(item.key, { defaultValue: item.fallback })}</span>
-      {item.id === "playground" && <span className="nav-new">NEW</span>}
+      {item.id === "playground" && <span className="nav-new">{t("common.new", { defaultValue: "NEW" })}</span>}
     </button>
   );
 }

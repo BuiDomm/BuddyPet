@@ -15,8 +15,8 @@
       ],
       "category": "fakeDamage",
       "durationMs": 7200,
-      "riveArtboard": "Goat10",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "Goat10",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "headbutt",
         "reduceMotion"
@@ -72,8 +72,8 @@
       ],
       "category": "coverContent",
       "durationMs": 7600,
-      "riveArtboard": "Goat10",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "Goat10",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "nibble",
         "edge"
@@ -130,8 +130,8 @@
       ],
       "category": "cursorPlay",
       "durationMs": 9000,
-      "riveArtboard": "Goat10",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "Goat10",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "dribble",
         "ballTargetX"
@@ -190,8 +190,8 @@
       ],
       "category": "coverContent",
       "durationMs": 7800,
-      "riveArtboard": "Camel7",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "Camel7",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "neckStretch",
         "stretchAmount"
@@ -247,8 +247,8 @@
       ],
       "category": "coverContent",
       "durationMs": 8200,
-      "riveArtboard": "Camel7",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "Camel7",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "chew",
         "edge"
@@ -304,8 +304,8 @@
       ],
       "category": "fakeDamage",
       "durationMs": 8600,
-      "riveArtboard": "Camel7",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "Camel7",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "spitWipe",
         "reduceMotion"
@@ -364,8 +364,8 @@
       ],
       "category": "coverContent",
       "durationMs": 7000,
-      "riveArtboard": "MemeCat",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "MemeCat",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "cardSlap",
         "pawSide"
@@ -421,8 +421,8 @@
       ],
       "category": "fakeDamage",
       "durationMs": 7600,
-      "riveArtboard": "MemeCat",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "MemeCat",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "scratch",
         "scratchCount"
@@ -479,8 +479,8 @@
       ],
       "category": "cursorPlay",
       "durationMs": 8500,
-      "riveArtboard": "MemeCat",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "MemeCat",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "loaf",
         "lookX"
@@ -538,8 +538,8 @@
       ],
       "category": "coverContent",
       "durationMs": 7900,
-      "riveArtboard": "ShibaInu",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "ShibaInu",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "tug",
         "tugAmount"
@@ -595,8 +595,8 @@
       ],
       "category": "fakeDamage",
       "durationMs": 8200,
-      "riveArtboard": "ShibaInu",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "ShibaInu",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "dig",
         "particleLevel"
@@ -653,8 +653,8 @@
       ],
       "category": "cursorPlay",
       "durationMs": 9200,
-      "riveArtboard": "ShibaInu",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "ShibaInu",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "zoomies",
         "targetX"
@@ -715,8 +715,8 @@
       ],
       "category": "ambient",
       "durationMs": 6200,
-      "riveArtboard": "SharedBuddy",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "SharedBuddy",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "peek",
         "edge"
@@ -771,8 +771,8 @@
       ],
       "category": "ambient",
       "durationMs": 10000,
-      "riveArtboard": "SharedBuddy",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "SharedBuddy",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "nap",
         "breathAmount"
@@ -828,8 +828,8 @@
       ],
       "category": "ambient",
       "durationMs": 7000,
-      "riveArtboard": "SharedBuddy",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "SharedBuddy",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "breakTicket"
       ],
@@ -885,8 +885,8 @@
       ],
       "category": "ambient",
       "durationMs": 6500,
-      "riveArtboard": "SharedBuddy",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "SharedBuddy",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "stickyNote"
       ],
@@ -942,8 +942,8 @@
       ],
       "category": "ambient",
       "durationMs": 6000,
-      "riveArtboard": "SharedBuddy",
-      "stateMachine": "BuddyDirector",
+      "motionRig": "SharedBuddy",
+      "motionController": "FreeMotionDirector",
       "inputs": [
         "confetti",
         "particleLevel"

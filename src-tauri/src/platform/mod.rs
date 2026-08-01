@@ -1,8 +1,8 @@
 //! Minimal operating-system adapters.
 //!
 //! These adapters intentionally expose only time since last input. Session,
-//! fullscreen, power and pointer state are supplied by the window shell so this
-//! module never installs hooks or reads input content.
+//! fullscreen, power and pointer state come from read-only OS queries and the
+//! window shell, so this module never installs hooks or reads input content.
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 mod fallback;

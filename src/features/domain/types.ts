@@ -3,6 +3,7 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 export const BUDDY_IDS = ["goat10", "camel7", "memeCat", "shiba"] as const;
 export type BuddyId = (typeof BUDDY_IDS)[number];
+export const DEFAULT_BUDDY_ID: BuddyId = "memeCat";
 
 export type Tone = "kind" | "sassy";
 export type Intensity = "gentle" | "playful" | "chaos";
@@ -28,6 +29,7 @@ export interface BehaviorToggles {
   coverContent: boolean;
   cursorPlay: boolean;
   sfx: boolean;
+  voice: boolean;
 }
 
 export interface SettingsV1 {
@@ -65,6 +67,27 @@ export interface AppSnapshot {
   runtime: RuntimeState;
 }
 
+export interface VoicePackStatus {
+  state: "missing" | "downloading" | "installing" | "ready" | "error";
+  locale: Locale;
+  id: string;
+  version: string;
+  name: string;
+  engine: string;
+  license: string;
+  licenseUrl: string;
+  downloadedBytes: number;
+  totalBytes: number;
+  error: string | null;
+}
+
+export interface SpeakDialogueRequest {
+  text: string;
+  locale: Locale;
+  petId: BuddyId;
+  volume: number;
+}
+
 export interface Rect {
   x: number;
   y: number;
@@ -85,12 +108,17 @@ export interface EpisodePlan {
   trigger: "focusNudge" | "random" | "manual" | "tutorial";
   petId: BuddyId;
   actionId: string;
+  lineKey: string;
   monitorId: string;
   anchorRect: Rect;
+  motionPath: Rect[];
+  introDurationMs: number;
   captureRect: Rect | null;
   locale: Locale;
   tone: Tone;
   seed: number;
+  reduceMotion: boolean;
+  powerSaver: boolean;
   line?: string;
 }
 
@@ -103,6 +131,13 @@ export type RendererEvent =
   | { type: "marker"; eventId: string; marker: string }
   | { type: "completed"; eventId: string }
   | { type: "failed"; eventId: string; reason: string };
+
+export type DirectorEvent =
+  | { type: "setPhase"; eventId: string; phase: string }
+  | { type: "react"; eventId: string; reaction: "startledAndRelocate" | "petted" | "dragReleased"; relocateTo?: Rect }
+  | { type: "hide"; eventId: string; reason: string }
+  | { type: "blocked"; reason: string }
+  | { type: "start"; plan: EpisodePlan };
 
 export type DesktopAction =
   | "summon"
@@ -124,6 +159,8 @@ export interface ActionRequest {
   durationMinutes?: number;
   petId?: BuddyId;
   actionId?: string;
+  text?: string;
+  locale?: Locale;
 }
 
 export interface BuddyDefinition {

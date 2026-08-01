@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn defaults_are_safe_and_valid() {
         let settings = SettingsV1::default();
-        assert_eq!(settings.selected_pets, vec![PetId::Goat10]);
+        assert_eq!(settings.selected_pets, vec![PetId::MemeCat]);
         assert!(!settings.sound);
         assert!(!settings.autostart);
         assert!(!settings.immersive_enabled);

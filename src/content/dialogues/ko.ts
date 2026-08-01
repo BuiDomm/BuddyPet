@@ -2,7 +2,7 @@ import type { LocaleDialogue } from "../types";
 
 export const koDialogue = {
   goat10: {
-    greeting: { kind: "가볍게 몸을 풀고 놀아 볼까요?", sassy: "등번호 10번이 데스크톱에 입장했습니다." },
+    greeting: { kind: "지나가다가 수염을 한번 다듬으러 들렀어요.", sassy: "10번 입장. 커서는 제자리를 지키세요." },
     "welcome-back": { kind: "돌아왔네요. 이 구석을 따뜻하게 지켜 뒀어요.", sassy: "벌써 돌아왔어요? 잘됐네요. 관중이 필요했거든요." },
     "focus-nudge": { kind: "한동안 계속 활동했어요. 잠깐 쉬어 갈까요?", sassy: "긴 경기였어요. 좋은 발도 잠깐은 쉬어야죠." },
     "break-offer": { kind: "당신을 위한 짧은 휴식 티켓이에요.", sassy: "공식 판정입니다. 2분간 숨 고르기." },
@@ -14,7 +14,7 @@ export const koDialogue = {
     "prank-success": { kind: "짜잔! 픽셀은 모두 멀쩡해요.", sassy: "깔끔한 마무리. 진짜 작업은 털끝 하나 안 건드렸죠." },
     "prank-fallback": { kind: "오늘은 화면 캡처 대신 만화 장난을 보여 줄게요.", sassy: "픽셀의 사생활은 지켰고, 상상력이 슛을 합니다." },
     caught: { kind: "드리블 중인 저를 잡았네요.", sassy: "보기 드문 가로채기군요. 마음껏 기뻐하세요." },
-    "first-click": { kind: "메에! 살살 눌러요. 옆으로 갈게요.", sassy: "반칙! 좋아요, 다섯 걸음 물러나 드리죠." },
+    "first-click": { kind: "메에! 살살요, 수염을 막 다듬었단 말이에요.", sassy: "그 손가락에 옐로카드! 반대편으로 갑니다." },
     "second-click": { kind: "알겠어요. 바로 나갈게요.", sassy: "두 번 클릭. 심판의 결정입니다." },
     "pet-start": { kind: "오, 정말 기분 좋네요.", sassy: "훌륭한 손놀림이에요. 계속해도 좋습니다." },
     "pet-thanks": { kind: "고마워요. 마음이 한결 편안해졌어요.", sassy: "데스크톱의 재능을 알아보는군요." },
@@ -23,12 +23,12 @@ export const koDialogue = {
     dismiss: { kind: "괜찮아요. 자리를 비켜 드릴게요.", sassy: "무패인 채로 조용히 퇴장하죠." },
     "less-of-this": { kind: "알겠어요. 이 장난은 줄일게요.", sassy: "취향이 아니군요. 선발 명단에서 뺄게요." },
     snoozed: { kind: "푹 쉬어요. 다시 부를 때까지 기다릴게요.", sassy: "벤치 대기 접수. 나중에 다시 준비하죠." },
-    "manual-summon": { kind: "불렀나요? 기쁘게 놀러 왔어요.", sassy: "뜨거운 요청에 따른 특별 출연입니다." },
+    "manual-summon": { kind: "불렀나요? 화면 가장자리에서부터 뛰어왔어요.", sassy: "10번을 직접 소환하다니, 안목이 좋군요." },
     "meeting-mode": { kind: "회의 모드가 켜졌어요. 조용히 있을게요.", sassy: "프로다운 표정 장착. 경기장을 비웁니다." },
     goodbye: { kind: "나중에 봐요. 몸도 잘 챙겨요.", sassy: "우아한 퇴장, 당연하죠." }
   },
   camel7: {
-    greeting: { kind: "안녕하세요. 차분하게 한 걸음 가 볼까요?", sassy: "7번이 왔습니다. 자세부터 좋아지는군요." },
+    greeting: { kind: "멀리 뛰어왔으니 여기서 멋지게 숨 좀 고를게요.", sassy: "7번 도착. 화면의 분위기부터 좋아졌군요." },
     "welcome-back": { kind: "돌아왔네요. 햇살 좋은 자리를 남겨 뒀어요.", sassy: "돌아오셨군요. 탁월한 판단입니다." },
     "focus-nudge": { kind: "오랫동안 계속 활동했어요. 잠깐 숨을 고를까요?", sassy: "대단한 지구력이군요. 여유 있는 휴식이 날카로움을 지켜 줍니다." },
     "break-offer": { kind: "여정을 위한 작은 휴식 티켓이에요.", sassy: "쉬어 가세요. 스타도 페이스 조절은 합니다." },
@@ -40,7 +40,7 @@ export const koDialogue = {
     "prank-success": { kind: "다시 깨끗해졌어요. 진짜 흔적은 하나도 없어요.", sassy: "완벽한 복구. 닦는 동작까지 계획했습니다." },
     "prank-fallback": { kind: "캡처를 쓸 수 없어 그림 소품을 가져왔어요.", sassy: "캡처가 없어도 제 무대는 충분합니다." },
     caught: { kind: "아, 그 작은 접기를 봤군요.", sassy: "잡혔다고요? 가까이서 감상한 거겠죠." },
-    "first-click": { kind: "흐음! 안전한 쪽으로 옮길게요.", sassy: "접촉 발생! 그래도 전 침착합니다." },
+    "first-click": { kind: "앗! 머리는 건드리지 말아요. 저쪽으로 뛸게요.", sassy: "접촉 감지. 다행히 제 폼은 여전히 완벽합니다." },
     "second-click": { kind: "알겠습니다. 지금 나갈게요.", sassy: "두 번째 클릭으로 공연을 마칩니다." },
     "pet-start": { kind: "편안하네요. 고마워요.", sassy: "네, 바로 거기요. 훌륭한 손길입니다." },
     "pet-thanks": { kind: "이 다정한 순간이 참 좋네요.", sassy: "평온함은 저에게 잘 어울려요. 당신에게도요." },
@@ -49,12 +49,12 @@ export const koDialogue = {
     dismiss: { kind: "물론이죠. 자리를 비켜 드릴게요.", sassy: "더 보고 싶을 때 떠나는 법을 압니다." },
     "less-of-this": { kind: "기억할게요. 이 장난은 덜 보여 드리죠.", sassy: "그 기술은 강등입니다. 기준은 중요하니까요." },
     snoozed: { kind: "다시 준비될 때까지 쉴게요.", sassy: "계획된 회복 시간. 아주 프로답군요." },
-    "manual-summon": { kind: "저를 불렀나요? 여기 있어요.", sassy: "개인 지명 요청이군요. 예상했습니다." },
+    "manual-summon": { kind: "불렀나요? 조금 너무 빨리 달려왔나 봐요.", sassy: "개인 소환이군요. 아주 합리적인 선택입니다." },
     "meeting-mode": { kind: "회의 모드가 켜졌어요. 방해하지 않을게요.", sassy: "업무 시간입니다. 볼거리는 나중을 위해 아껴 두죠." },
     goodbye: { kind: "잠시 안녕이에요. 편안히 다녀오세요.", sassy: "7번은 완벽한 자세로 퇴장합니다." }
   },
   memeCat: {
-    greeting: { kind: "안녕. 조용한 고양이 기운을 가져왔어.", sassy: "내가 왔다. 이제 데스크톱은 안심해도 돼." },
+    greeting: { kind: "안녕. 키보드에서 가장 따뜻한 자리를 확인하러 왔어.", sassy: "고양이 도착. 계속 바쁜 척해도 좋아." },
     "welcome-back": { kind: "돌아왔네. 중요한 것 위에는 안 앉았어.", sassy: "열린 탭이라는 자연 서식지로 돌아왔군." },
     "focus-nudge": { kind: "오래 활동했어. 먼 곳을 보며 눈을 깜빡일래?", sassy: "너무 오래 쳐다봤어. 고양이인 나도 알아챘다고." },
     "break-offer": { kind: "작은 휴식 카드를 만들어 왔어.", sassy: "다음 할 일은 2분간 식빵 굽기야." },
@@ -66,7 +66,7 @@ export const koDialogue = {
     "prank-success": { kind: "끝. 진짜 픽셀은 다치지 않았어.", sassy: "완벽한 냥펀치. 최소 노력, 최대 연출." },
     "prank-fallback": { kind: "캡처가 안 돼서 가짜 카드로 놀고 있어.", sassy: "사생활이 이겼네. 소품은 여전히 넘어뜨릴 수 있어." },
     caught: { kind: "아. 앞발을 봤네.", sassy: "증거가 충분하지 않아." },
-    "first-click": { kind: "므릅! 다른 곳으로 폴짝 갈게.", sassy: "주연을 찌르다니. 대담하군." },
+    "first-click": { kind: "므릅! 갑자기 누르면 따가운 눈빛이 추가돼.", sassy: "주연을 클릭했어? 자리를 바꾸지." },
     "second-click": { kind: "알았어. 지금 사라질게.", sassy: "두 번 클릭. 고양이는 스스로 퇴근한다." },
     "pet-start": { kind: "골골송을 허가할게.", sassy: "괜찮은 손길이야. 계속 바쳐." },
     "pet-thanks": { kind: "좋았어. 고마워.", sassy: "만족의 느린 눈 깜빡임 하나를 주지." },
@@ -75,12 +75,12 @@ export const koDialogue = {
     dismiss: { kind: "공간을 돌려줄게.", sassy: "좋아. 어차피 세 시간 뒤에는 가려고 했어." },
     "less-of-this": { kind: "알았어. 다음부터 이건 줄일게.", sassy: "그 장난은 앞발 사용 권한을 잃었어." },
     snoozed: { kind: "낮잠 시간이네. 기다릴게.", sassy: "드디어 고양이를 위해 만든 기능이군." },
-    "manual-summon": { kind: "고양이를 불렀어? 안녕.", sassy: "소환 성공. 간식은 선택 사항이야." },
+    "manual-summon": { kind: "고양이를 불렀어? 왔지만 일은 안 받아.", sassy: "소환 성공. 이용료는 화면 모서리 하나야." },
     "meeting-mode": { kind: "회의 모드네. 화면 밖에서 식빵 구울게.", sassy: "내 의견을 음소거했어." },
     goodbye: { kind: "다음에 봐. 천천히 눈 깜빡.", sassy: "고양이가 이번 세션을 종료했습니다." }
   },
   shiba: {
-    greeting: { kind: "안녕! 작은 모험 하나 준비됐어.", sassy: "시바 온라인. 재미 수치가 아주 좋아." },
+    greeting: { kind: "안녕! 너무 빨리 뛰어와서 브레이크를 깜빡할 뻔했어.", sassy: "시바 온라인. 누가 커서를 풀어 놨지?" },
     "welcome-back": { kind: "돌아왔구나! 내 꼬리가 널 기억해.", sassy: "왔네! 좋은 에너지는 계속 돌려 놓았어." },
     "focus-nudge": { kind: "오래 활동했어. 일어나서 같이 늘어날까?", sassy: "긴 기록이야! 이제 전설의 일어서기 기술을 써 봐." },
     "break-offer": { kind: "새 휴식 티켓을 파 왔어.", sassy: "희귀 아이템: 아무것도 하지 않아도 되는 허가증." },
@@ -92,7 +92,7 @@ export const koDialogue = {
     "prank-success": { kind: "끝! 진짜 것은 전부 그대로야.", sassy: "완벽한 우다다. 쫓긴 문서는 0개." },
     "prank-fallback": { kind: "캡처가 안 돼서 만화 흙을 가져왔어.", sassy: "픽셀은 빌리지 않았어. 혼돈은 직접 챙겨 왔지." },
     caught: { kind: "앗! 내가 파던 곳을 찾았네.", sassy: "이 구멍은 내가 오기 전부터 있었어." },
-    "first-click": { kind: "낑! 더 안전한 곳으로 뛸게.", sassy: "코 콕 감지! 비상 점프 가동." },
+    "first-click": { kind: "낑! 기습 코 콕이라니, 안전한 곳으로 뛸게.", sassy: "코 경보! 손가락 회피 점프 가동." },
     "second-click": { kind: "알았어! 바로 갈게.", sassy: "두 번 콕은 전술적 후퇴라는 뜻이야." },
     "pet-start": { kind: "좋아! 살살 쓰다듬어 줘.", sassy: "꼬리 속도 100퍼센트 증가." },
     "pet-thanks": { kind: "고마워! 하루가 전부 좋아졌어.", sassy: "별 다섯 개 쓰담. 수정 사항 없음." },
@@ -101,7 +101,7 @@ export const koDialogue = {
     dismiss: { kind: "알았어! 자리를 비켜 줄게.", sassy: "품위와 작은 멍 한 번을 챙겨 후퇴한다." },
     "less-of-this": { kind: "알겠어. 그 장난은 덜 할게.", sassy: "그 기술은 장난감 상자로 돌아간다." },
     snoozed: { kind: "낮잠 시간이야! 나중에 돌아올게.", sassy: "다시 알림 접수. 꿈속 우다다 시작." },
-    "manual-summon": { kind: "불렀어? 뭐 하고 놀까?", sassy: "시바 즉시 배송 완료." },
+    "manual-summon": { kind: "불렀어? 말이 끝나기도 전에 달리기 시작했어.", sassy: "시바 특급 배송 완료. 반품은 안 돼." },
     "meeting-mode": { kind: "회의 모드네. 아주 조용히 있을게.", sassy: "진지한 귀 장착. 멍 금지." },
     goodbye: { kind: "안녕! 곧 잠깐 쉬어 줘.", sassy: "시바 퇴장. 꼬리는 정상 작동 중." }
   }

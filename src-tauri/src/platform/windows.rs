@@ -4,7 +4,10 @@ use windows::Win32::{
     Foundation::RECT,
     Graphics::Gdi::{GetMonitorInfoW, MONITOR_DEFAULTTONEAREST, MONITORINFO, MonitorFromWindow},
     System::StationsAndDesktops::{CloseDesktop, DESKTOP_READOBJECTS, OpenInputDesktop},
-    System::SystemInformation::GetTickCount64,
+    System::{
+        Power::{GetSystemPowerStatus, SYSTEM_POWER_STATUS},
+        SystemInformation::GetTickCount64,
+    },
     UI::{
         Input::KeyboardAndMouse::{
             GetAsyncKeyState, GetLastInputInfo, LASTINPUTINFO, VK_LBUTTON, VK_MBUTTON, VK_RBUTTON,
@@ -60,7 +63,14 @@ impl SafetyStateProvider for NativeLastInputProvider {
     }
 
     fn power_mode(&self) -> PowerMode {
-        PowerMode::Unknown
+        let mut status = SYSTEM_POWER_STATUS::default();
+        // SAFETY: `status` is an initialized output buffer exclusively borrowed
+        // by the synchronous Kernel32 query.
+        match unsafe { GetSystemPowerStatus(&mut status) } {
+            Ok(()) if status.SystemStatusFlag == 1 => PowerMode::BatterySaver,
+            Ok(()) => PowerMode::Normal,
+            Err(_) => PowerMode::Unknown,
+        }
     }
 
     fn fullscreen_state(&self) -> FullscreenState {

@@ -6,7 +6,7 @@ import { Button } from "../../components/Button";
 import { Icon } from "../../components/Icon";
 import { Toggle } from "../../components/Toggle";
 import { BUDDIES, INTENSITY_META } from "../domain/defaults";
-import { BUDDY_IDS, type ActionRequest, type BuddyId, type Intensity, type Locale, type SettingsV1, type Tone } from "../domain/types";
+import { BUDDY_IDS, DEFAULT_BUDDY_ID, type ActionRequest, type BuddyId, type Intensity, type Locale, type SettingsV1, type Tone } from "../domain/types";
 
 const LOCALES: { id: Locale; name: string; nativeName: string; sample: string }[] = [
   { id: "vi", name: "Vietnamese", nativeName: "Tiếng Việt", sample: "Nghỉ một chút nhé?" },
@@ -59,7 +59,7 @@ export function Onboarding({ initialSettings, capturePermission, onAction, onCom
         <div className="brand-mark" aria-label="BuddyPet">
           <span className="brand-mark__face">B</span>
           <span>BuddyPet</span>
-          <Badge tone="purple">early access</Badge>
+          <Badge tone="purple">{t("common.earlyAccess", { defaultValue: "EARLY ACCESS" })}</Badge>
         </div>
         <span className="onboarding-topbar__step">
           {t("onboarding.step", { defaultValue: "Step {{current}} of {{total}}", current: step + 1, total: STEPS.length })}
@@ -166,7 +166,7 @@ function CrewStep({ draft, onLocale, onBuddy, onChange, t }: {
               checked={draft.selectedPets.length > 1}
               onChange={(event) => onChange({
                 ...draft,
-                selectedPets: event.target.checked ? [...BUDDY_IDS] : [draft.selectedPets[0] ?? "goat10"],
+                selectedPets: event.target.checked ? [...BUDDY_IDS] : [draft.selectedPets[0] ?? DEFAULT_BUDDY_ID],
               })}
             />
             <Icon name="rotate" size={16} />
@@ -187,7 +187,7 @@ function CrewStep({ draft, onLocale, onBuddy, onChange, t }: {
                 onClick={() => onBuddy(buddy.id)}
               >
                 <BuddyCharacter buddyId={buddy.id} size="small" decorative />
-                <span className="buddy-choice__copy"><strong>{buddy.name}</strong><small>{buddy.tagline}</small></span>
+                <span className="buddy-choice__copy"><strong>{t(`pets.${buddy.id}.name`, { defaultValue: buddy.name })}</strong><small>{t(`pets.${buddy.id}.tagline`, { defaultValue: buddy.tagline })}</small></span>
                 {selected && <SelectMark />}
               </button>
             );
@@ -199,7 +199,7 @@ function CrewStep({ draft, onLocale, onBuddy, onChange, t }: {
 }
 
 function PersonalityStep({ draft, onChange, t }: { draft: SettingsV1; onChange: (settings: SettingsV1) => void; t: TFunction }) {
-  const activeBuddy = draft.selectedPets[0] ?? "goat10";
+  const activeBuddy = draft.selectedPets[0] ?? DEFAULT_BUDDY_ID;
   const lines: Record<Tone, string[]> = {
     kind: [
       t("dialogue.kind.1", { defaultValue: "Your shoulders called. They want a tiny stretch." }),
@@ -268,7 +268,7 @@ function RhythmStep({ draft, onChange, t }: { draft: SettingsV1; onChange: (sett
               <strong>{option.title}</strong>
               <p>{option.description}</p>
               <div className="intensity-card__stats">
-                <span><small>{t("intensity.random", { defaultValue: "Random visits" })}</small><b>{meta.range}</b></span>
+                <span><small>{t("intensity.random", { defaultValue: "Random visits" })}</small><b>{meta.range.replace(" min", "")} {t("common.minutesShort", { defaultValue: "min" })}</b></span>
                 <span><small>{t("intensity.daily", { defaultValue: "Daily max" })}</small><b>{meta.daily}</b></span>
               </div>
               {selected && <SelectMark />}
@@ -304,7 +304,7 @@ function PrivacyStep({ draft, capturePermission, onChange, onAction, t }: {
           <div className="fake-toolbar"><i /><i /><i /></div>
           <div className="fake-document"><span /><span /><span /><span /></div>
           <div className="fake-bite"><b /><b /><b /></div>
-          <BuddyCharacter buddyId={draft.selectedPets[0] ?? "goat10"} size="medium" mood="prank" decorative />
+          <BuddyCharacter buddyId={draft.selectedPets[0] ?? DEFAULT_BUDDY_ID} size="medium" mood="prank" decorative />
         </div>
         <div className="privacy-demo__flow">
           <span>{t("onboarding.privacy.capture", { defaultValue: "Tiny region" })}</span><Icon name="chevronRight"/><span>{t("onboarding.privacy.memory", { defaultValue: "Memory only" })}</span><Icon name="chevronRight"/><span>{t("onboarding.privacy.gone", { defaultValue: "Gone after prank" })}</span>
@@ -331,7 +331,7 @@ function PrivacyStep({ draft, capturePermission, onChange, onAction, t }: {
 function ReadyStep({ draft, onChange, onAction, t }: { draft: SettingsV1; onChange: (settings: SettingsV1) => void; onAction: (request: ActionRequest) => Promise<void>; t: TFunction }) {
   const [mood, setMood] = useState<BuddyMood>("idle");
   const [practiced, setPracticed] = useState(false);
-  const activeBuddy = useMemo(() => draft.selectedPets[0] ?? "goat10", [draft.selectedPets]);
+  const activeBuddy = useMemo(() => draft.selectedPets[0] ?? DEFAULT_BUDDY_ID, [draft.selectedPets]);
 
   const practiceClick = () => {
     setPracticed(true);
@@ -356,7 +356,7 @@ function ReadyStep({ draft, onChange, onAction, t }: { draft: SettingsV1; onChan
           <div className={`practice-bubble ${practiced ? "is-visible" : ""}`}>{draft.tone === "sassy" ? t("onboarding.ready.sassyLine", { defaultValue: "HEY! I was improving that pixel." }) : t("onboarding.ready.kindLine", { defaultValue: "Eep! Okay, okay — I’m moving!" })}</div>
         </div>
         <div className="ready-options panel-card">
-          <Toggle checked={draft.sound} onChange={(sound) => { onChange({ ...draft, sound }); if (sound) void onAction({ action: "previewSound" }); }} label={t("sound.effects", { defaultValue: "Buddy sounds" })} description={t("sound.effectsHelp", { defaultValue: "Tiny bleats, squeaks, chimes, and dramatic gasps." })} />
+          <Toggle checked={draft.sound} onChange={(sound) => { onChange({ ...draft, sound }); if (sound) void onAction({ action: "previewSound", petId: draft.selectedPets[0] ?? DEFAULT_BUDDY_ID, text: t("sound.voicePreviewLine", { defaultValue: "Hey! Your Buddy voice is ready." }), locale: draft.locale }); }} label={t("sound.effects", { defaultValue: "Buddy sounds" })} description={t("sound.effectsHelp", { defaultValue: "Tiny bleats, squeaks, chimes, and dramatic gasps." })} />
           <Toggle checked={draft.autostart} onChange={(autostart) => onChange({ ...draft, autostart })} label={t("startup.launch", { defaultValue: "Open BuddyPet at login" })} description={t("startup.launchHelp", { defaultValue: "Starts quietly in the menu bar or system tray." })} />
           <div className="shortcut-card"><span><Icon name="keyboard"/><span><strong>{t("shortcut.hide", { defaultValue: "Emergency hide" })}</strong><small>{t("shortcut.hideHelp", { defaultValue: "Clears Buddy and pauses surprises for 30 minutes." })}</small></span></span><kbd>{draft.hotkey}</kbd></div>
         </div>

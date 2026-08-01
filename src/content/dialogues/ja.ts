@@ -2,7 +2,7 @@ import type { LocaleDialogue } from "../types";
 
 export const jaDialogue = {
   goat10: {
-    greeting: { kind: "軽くウォームアップして、遊ぼうか。", sassy: "背番号10、デスクトップに登場。" },
+    greeting: { kind: "通りすがりに、ひげを整えに寄ったよ。", sassy: "背番号10が入場。カーソルはその場で待機。" },
     "welcome-back": { kind: "おかえり。この隅を温めておいたよ。", sassy: "もう戻ったの？ ちょうど観客が欲しかったんだ。" },
     "focus-nudge": { kind: "ずっと操作していたね。少し休憩しない？", sassy: "長い試合だね。いい足にもベンチ休憩は必要だよ。" },
     "break-offer": { kind: "君だけの短い休憩チケットだよ。", sassy: "公式判定。2分間のひと休み。" },
@@ -14,7 +14,7 @@ export const jaDialogue = {
     "prank-success": { kind: "じゃーん！ ピクセルは全部無事だよ。", sassy: "きれいなフィニッシュ。本物の作業は無傷だ。" },
     "prank-fallback": { kind: "今日は画面を使わず、漫画のいたずらにするね。", sassy: "ピクセルの秘密は守った。想像力がシュートする番だ。" },
     caught: { kind: "ドリブル中に見つかっちゃった。", sassy: "珍しいインターセプトだね。今だけ喜んでいいよ。" },
-    "first-click": { kind: "メェ！ 優しくね。横へ移動するよ。", sassy: "ファウル！ 仕方ない、5歩下がろう。" },
+    "first-click": { kind: "メェ！ 優しくね。ひげを整えたばかりなんだ。", sassy: "その指にイエローカード！ 反対側へ移るよ。" },
     "second-click": { kind: "わかった。すぐに帰るね。", sassy: "2回クリック。審判の判定だ。" },
     "pet-start": { kind: "あ、これは本当に気持ちいい。", sassy: "見事な手さばき。続けてもいいよ。" },
     "pet-thanks": { kind: "ありがとう。ずいぶん落ち着いたよ。", sassy: "デスクトップの才能を正しく評価しているね。" },
@@ -23,12 +23,12 @@ export const jaDialogue = {
     dismiss: { kind: "大丈夫。場所を空けるね。", sassy: "無敗のまま、静かに退場しよう。" },
     "less-of-this": { kind: "わかった。このいたずらは減らすね。", sassy: "好みじゃない？ 先発メンバーから外しておくよ。" },
     snoozed: { kind: "ゆっくりしてね。スヌーズが終わるまで待つよ。", sassy: "ベンチ待機を受理。また後で準備しよう。" },
-    "manual-summon": { kind: "呼んだ？ 喜んで遊びに来たよ。", sassy: "人気のリクエストによる特別出演だ。" },
+    "manual-summon": { kind: "呼んだ？ 画面の端から走ってきたよ。", sassy: "背番号10を名指しで召喚。いいセンスだね。" },
     "meeting-mode": { kind: "会議モードだね。静かにしているよ。", sassy: "仕事の顔を装着。ピッチを離れよう。" },
     goodbye: { kind: "またね。自分のことも大切に。", sassy: "優雅な退場、もちろんさ。" }
   },
   camel7: {
-    greeting: { kind: "こんにちは。落ち着いて一歩進もうか。", sassy: "背番号7の到着。姿勢まで良くなったね。" },
+    greeting: { kind: "遠くから走ってきたから、ここで格好よくひと息つくよ。", sassy: "背番号7が到着。画面の雰囲気まで良くなったね。" },
     "welcome-back": { kind: "おかえり。日当たりのいい場所を空けておいたよ。", sassy: "戻ってきたね。実に賢い判断だ。" },
     "focus-nudge": { kind: "長い間ずっと操作していたね。ひと息つく？", sassy: "見事な持久力。余裕のある休憩が切れ味を保つよ。" },
     "break-offer": { kind: "旅のお供に、小さな休憩チケットをどうぞ。", sassy: "休んでおこう。スターもペース配分はする。" },
@@ -40,7 +40,7 @@ export const jaDialogue = {
     "prank-success": { kind: "元どおりきれい。本物の跡は一つもないよ。", sassy: "完璧な復元。拭き取りまで計画済みさ。" },
     "prank-fallback": { kind: "キャプチャが使えないから、絵の小道具を持ってきたよ。", sassy: "キャプチャなし？ 僕の演出には問題ない。" },
     caught: { kind: "あ、その小さな折り目を見たね。", sassy: "捕まった？ 間近で鑑賞された、と呼ぼう。" },
-    "first-click": { kind: "フン！ 安全な場所へ移動するよ。", sassy: "接触あり！ それでも僕は冷静だ。" },
+    "first-click": { kind: "おっと！ 髪には触らないで。あっちへ跳ぶよ。", sassy: "接触を検知。それでもフォームは完璧だ。" },
     "second-click": { kind: "了解。今すぐ帰るよ。", sassy: "2回目のクリックでショーは終了だ。" },
     "pet-start": { kind: "落ち着くね。ありがとう。", sassy: "そう、そこだ。見事なサービスだね。" },
     "pet-thanks": { kind: "この穏やかな時間、うれしいよ。", sassy: "落ち着きは僕に似合う。君にも似合うね。" },
@@ -49,12 +49,12 @@ export const jaDialogue = {
     dismiss: { kind: "もちろん。場所を譲るよ。", sassy: "もっと見たいと思うところで去るのが流儀だ。" },
     "less-of-this": { kind: "覚えておくね。この技は少なくするよ。", sassy: "その技は降格。基準は大切だからね。" },
     snoozed: { kind: "また準備ができるまで休んでいるよ。", sassy: "計画的な回復時間。とてもプロらしい。" },
-    "manual-summon": { kind: "僕を呼んだ？ ここにいるよ。", sassy: "ご指名だね。予想どおりだ。" },
+    "manual-summon": { kind: "呼んだ？ 少し速く走りすぎたかも。", sassy: "ご指名で召喚。実に合理的な選択だ。" },
     "meeting-mode": { kind: "会議モードだね。邪魔はしないよ。", sassy: "仕事の時間。見せ場は後に取っておこう。" },
     goodbye: { kind: "それじゃ、また。穏やかに過ごしてね。", sassy: "背番号7、完璧な姿勢で退場。" }
   },
   memeCat: {
-    greeting: { kind: "こんにちは。静かな猫の気配を持ってきたよ。", sassy: "到着した。これでデスクトップも安心だね。" },
+    greeting: { kind: "こんにちは。キーボードの一番暖かい場所を調べに来たよ。", sassy: "猫が到着。忙しいふりを続けてもいいよ。" },
     "welcome-back": { kind: "おかえり。大事なものには座ってないよ。", sassy: "開いたタブという自然の生息地へ戻ったね。" },
     "focus-nudge": { kind: "長く操作していたね。遠くを見てまばたきする？", sassy: "見つめすぎ。猫の僕でも気づいたよ。" },
     "break-offer": { kind: "小さな休憩カードを作ってきたよ。", sassy: "次の仕事は2分間の香箱座り。" },
@@ -66,7 +66,7 @@ export const jaDialogue = {
     "prank-success": { kind: "おしまい。本物のピクセルは無傷だよ。", sassy: "完璧な一撃。最小の努力で最大の演出。" },
     "prank-fallback": { kind: "キャプチャできないから、偽物のカードで遊ぶね。", sassy: "プライバシーの勝ち。小道具ならまだ倒せる。" },
     caught: { kind: "あ。前足を見たね。", sassy: "証拠としては不十分だよ。" },
-    "first-click": { kind: "ミャッ！ 別の場所へ跳ぶね。", sassy: "主役をつつくとは、大胆だね。" },
+    "first-click": { kind: "ミャッ！ 不意打ちには冷たい視線が一つ付くよ。", sassy: "主役をクリックした？ 席を替えるよ。" },
     "second-click": { kind: "わかった。今すぐ消えるよ。", sassy: "2回クリック。猫は自ら退勤する。" },
     "pet-start": { kind: "ゴロゴロしてもいいよ。", sassy: "悪くない。貢ぎ物を続けて。" },
     "pet-thanks": { kind: "気持ちよかった。ありがとう。", sassy: "満足のゆっくりまばたきを一つあげる。" },
@@ -75,12 +75,12 @@ export const jaDialogue = {
     dismiss: { kind: "場所を返すね。", sassy: "いいよ。どうせ3時間後には帰るつもりだった。" },
     "less-of-this": { kind: "了解。次からこれは減らすよ。", sassy: "そのいたずらは肉球使用権を失った。" },
     snoozed: { kind: "お昼寝の時間。待ってるよ。", sassy: "ついに猫のための機能ができたね。" },
-    "manual-summon": { kind: "猫を呼んだ？ こんにちは。", sassy: "召喚成功。おやつは任意です。" },
+    "manual-summon": { kind: "猫を呼んだ？ 来たけど、仕事は受けないよ。", sassy: "召喚成功。利用料は画面の隅ひとつ。" },
     "meeting-mode": { kind: "会議モードだね。画面の外で丸くなるよ。", sassy: "意見をミュートしました。" },
     goodbye: { kind: "またね。ゆっくりまばたき。", sassy: "猫は今回のセッションを終了しました。" }
   },
   shiba: {
-    greeting: { kind: "こんにちは！ 小さな冒険の準備はできてるよ。", sassy: "シバ、オンライン。楽しさの数値は良好です。" },
+    greeting: { kind: "こんにちは！ 速く走りすぎてブレーキを忘れかけたよ。", sassy: "シバ、オンライン。誰がカーソルを放したの？" },
     "welcome-back": { kind: "おかえり！ しっぽが君を覚えてたよ。", sassy: "やっと来たね。いい元気はずっと動かしておいたよ。" },
     "focus-nudge": { kind: "長く操作していたね。立って一緒に伸びる？", sassy: "長い記録だ！ 伝説の立ち上がり技を使おう。" },
     "break-offer": { kind: "新しい休憩チケットを掘り当てたよ。", sassy: "レアアイテム、何もしなくていい許可証。" },
@@ -92,7 +92,7 @@ export const jaDialogue = {
     "prank-success": { kind: "できた！ 本物は全部そのままだよ。", sassy: "完璧なダッシュ。追われた書類は0件。" },
     "prank-fallback": { kind: "キャプチャできないから、漫画の土を持ってきたよ。", sassy: "ピクセルは借りてない。混沌は持参したよ。" },
     caught: { kind: "わっ！ 掘っていた場所が見つかった。", sassy: "この穴は僕が来る前からあったよ。" },
-    "first-click": { kind: "キャン！ もっと安全な場所へ跳ぶね。", sassy: "鼻ツン検知！ 緊急ジャンプ起動。" },
+    "first-click": { kind: "キャン！ 不意打ちの鼻ツンだ。安全な場所へ跳ぶね。", sassy: "鼻アラーム！ 指よけジャンプ起動。" },
     "second-click": { kind: "わかった！ すぐ帰るね。", sassy: "2回ツンは戦術的撤退の合図。" },
     "pet-start": { kind: "やった！ 優しくなでてね。", sassy: "しっぽ速度が100パーセント上昇。" },
     "pet-thanks": { kind: "ありがとう！ 一日全部が楽しくなったよ。", sassy: "星5つのなで方。修正点なし。" },
@@ -101,7 +101,7 @@ export const jaDialogue = {
     dismiss: { kind: "わかった！ 場所を空けるね。", sassy: "品格と小さなワンを携えて撤退する。" },
     "less-of-this": { kind: "伝わったよ。その遊びは減らすね。", sassy: "その技はおもちゃ箱に戻します。" },
     snoozed: { kind: "お昼寝だ！ また後で戻るね。", sassy: "スヌーズ受理。夢の大運動会を開始。" },
-    "manual-summon": { kind: "呼んだ？ 何して遊ぶ？", sassy: "シバの即時配達、完了。" },
+    "manual-summon": { kind: "呼んだ？ 言い終わる前に走り出したよ。", sassy: "シバ特急便、配達完了。返品不可。" },
     "meeting-mode": { kind: "会議モードだね。とても静かにするよ。", sassy: "真剣な耳を装着。ワンは禁止。" },
     goodbye: { kind: "またね！ 近いうちに少し休んでね。", sassy: "シバ退場。しっぽは正常稼働中。" }
   }

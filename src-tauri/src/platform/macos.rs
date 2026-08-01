@@ -6,6 +6,7 @@ use core_foundation_sys::{
     number::{CFBooleanGetTypeID, CFBooleanGetValue, CFBooleanRef},
     string::{CFStringCreateWithCString, kCFStringEncodingUTF8},
 };
+use objc2_foundation::NSProcessInfo;
 
 use crate::core::{
     ActivityError, FullscreenState, LastInputProvider, PowerMode, SafetyStateProvider, SessionState,
@@ -80,7 +81,11 @@ impl SafetyStateProvider for NativeLastInputProvider {
     }
 
     fn power_mode(&self) -> PowerMode {
-        PowerMode::Unknown
+        if NSProcessInfo::processInfo().isLowPowerModeEnabled() {
+            PowerMode::BatterySaver
+        } else {
+            PowerMode::Normal
+        }
     }
 
     fn fullscreen_state(&self) -> FullscreenState {

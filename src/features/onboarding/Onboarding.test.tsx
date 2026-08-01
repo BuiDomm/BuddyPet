@@ -18,6 +18,12 @@ async function renderOnboarding() {
 }
 
 describe("Onboarding", () => {
+  it("preselects Meme Cat for a new user", async () => {
+    await renderOnboarding();
+    expect(screen.getByRole("radio", { name: /meme cat/i })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: /goat #10/i })).toHaveAttribute("aria-checked", "false");
+  });
+
   it("walks through all five setup decisions and completes", async () => {
     const { onComplete } = await renderOnboarding();
 

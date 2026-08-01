@@ -43,6 +43,9 @@ export const SFX_CUE_IDS = [
   "confetti-pop",
   "break-chime",
   "footstep-soft",
+  "cloth-rustle",
+  "motion-whoosh",
+  "motion-skid",
   "goat-bleat",
   "goat-gasp",
   "goat-cry",
@@ -57,6 +60,7 @@ export const SFX_CUE_IDS = [
   "camel-spit",
   "camel-wipe",
   "camel-step",
+  "camel-victory",
   "cat-mew",
   "cat-yowl",
   "cat-purr",
@@ -133,8 +137,8 @@ export interface PetDefinition {
   readonly jerseyNumber: 10 | 7 | null;
   readonly defaultSelected: boolean;
   readonly palette: readonly [string, string, string];
-  readonly artboard: string;
-  readonly stateMachine: string;
+  readonly motionRig: string;
+  readonly motionController: string;
   readonly sfxCues: readonly SfxCueId[];
 }
 
@@ -179,8 +183,8 @@ export interface ActionManifest {
   readonly triggerTags: readonly TriggerTag[];
   readonly category: BehaviorGroup;
   readonly durationMs: number;
-  readonly riveArtboard: string;
-  readonly stateMachine: string;
+  readonly motionRig: string;
+  readonly motionController: string;
   readonly inputs: readonly string[];
   readonly markers: readonly string[];
   readonly hitRegions: readonly HitRegion[];

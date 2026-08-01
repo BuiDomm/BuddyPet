@@ -88,6 +88,7 @@ pub struct BehaviorToggles {
     pub cover_content: bool,
     pub cursor_play: bool,
     pub sfx: bool,
+    pub voice: bool,
 }
 
 impl Default for BehaviorToggles {
@@ -97,6 +98,7 @@ impl Default for BehaviorToggles {
             cover_content: true,
             cursor_play: true,
             sfx: true,
+            voice: true,
         }
     }
 }
@@ -106,7 +108,7 @@ fn default_settings_schema_version() -> u16 {
 }
 
 fn default_selected_pets() -> Vec<PetId> {
-    vec![PetId::Goat10]
+    vec![PetId::MemeCat]
 }
 
 pub(crate) const fn default_sound_volume() -> u8 {
@@ -291,13 +293,27 @@ pub struct EpisodePlan {
     pub trigger: EpisodeTrigger,
     pub pet_id: PetId,
     pub action_id: String,
+    #[serde(default)]
+    pub line_key: String,
     pub monitor_id: String,
     pub anchor_rect: LogicalRect,
+    #[serde(default)]
+    pub motion_path: Vec<LogicalRect>,
+    #[serde(default = "default_intro_duration_ms")]
+    pub intro_duration_ms: u32,
     #[serde(default)]
     pub capture_rect: Option<LogicalRect>,
     pub locale: Locale,
     pub tone: Tone,
     pub seed: u64,
+    #[serde(default)]
+    pub reduce_motion: bool,
+    #[serde(default)]
+    pub power_saver: bool,
+}
+
+fn default_intro_duration_ms() -> u32 {
+    2_000
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, JsonSchema)]
@@ -353,8 +369,8 @@ pub struct ActionManifest {
     pub trigger_tags: Vec<TriggerTag>,
     pub category: BehaviorCategory,
     pub duration_ms: u32,
-    pub rive_artboard: String,
-    pub state_machine: String,
+    pub motion_rig: String,
+    pub motion_controller: String,
     #[serde(default)]
     pub inputs: Vec<String>,
     #[serde(default)]
@@ -463,7 +479,7 @@ mod tests {
     fn settings_wire_format_is_camel_case_and_privacy_safe() {
         let json = serde_json::to_value(SettingsV1::default()).unwrap();
         assert_eq!(json["schemaVersion"], 1);
-        assert_eq!(json["selectedPets"], serde_json::json!(["goat10"]));
+        assert_eq!(json["selectedPets"], serde_json::json!(["memeCat"]));
         assert_eq!(json["intensity"], "playful");
         assert_eq!(json["quietHours"]["startMinute"], 1_320);
         assert_eq!(json["immersiveEnabled"], false);
@@ -478,6 +494,15 @@ mod tests {
     fn missing_settings_fields_receive_v1_defaults() {
         let settings: SettingsV1 = serde_json::from_value(serde_json::json!({})).unwrap();
         assert_eq!(settings, SettingsV1::default());
+    }
+
+    #[test]
+    fn persisted_buddy_selection_is_not_replaced_by_the_new_default() {
+        let settings: SettingsV1 = serde_json::from_value(serde_json::json!({
+            "selectedPets": ["goat10"]
+        }))
+        .unwrap();
+        assert_eq!(settings.selected_pets, vec![PetId::Goat10]);
     }
 
     #[test]

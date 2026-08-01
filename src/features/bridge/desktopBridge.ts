@@ -2,14 +2,20 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { playBuddySfx } from "../audio/sfx";
-import { DEFAULT_SNAPSHOT, mergeSettings } from "../domain/defaults";
+import { playDialogueVoice } from "../audio/voice";
+import { BUDDIES, DEFAULT_BUDDY_ACTION_ID, DEFAULT_SNAPSHOT, mergeSettings } from "../domain/defaults";
+import { DEFAULT_BUDDY_ID } from "../domain/types";
 import type {
   ActionRequest,
   AppSnapshot,
   CaptureRegionRequest,
+  DirectorEvent,
   EpisodePlan,
+  Locale,
   RendererEvent,
   SettingsV1,
+  SpeakDialogueRequest,
+  VoicePackStatus,
   WindowRole,
 } from "../domain/types";
 
@@ -26,13 +32,30 @@ const COMMANDS = {
   rendererEvent: "renderer_event",
   captureRegion: "capture_region",
   petMenu: "set_pet_menu_open",
+  voicePackStatus: "get_voice_pack_status",
+  installVoicePack: "install_voice_pack",
+  speakDialogue: "speak_dialogue",
+  stopDialogue: "stop_dialogue",
 } as const;
 
 const EVENTS = {
   plan: "buddy://episode-plan",
   hide: "buddy://hide",
   snapshot: "buddy://snapshot",
+  director: "buddy://director-command",
+  voicePack: "buddy://voice-pack",
 } as const;
+
+const VOICE_PACK_META: Record<Locale, Omit<VoicePackStatus, "state" | "downloadedBytes" | "error">> = {
+  vi: { locale: "vi", id: "piper-vi-vais1000-medium", version: "1", name: "Tiếng Việt · VAIS-1000", engine: "Piper VITS", license: "MIT model · CC BY 4.0 corpus", licenseUrl: "https://huggingface.co/rhasspy/piper-voices/blob/main/vi/vi_VN/vais1000/medium/MODEL_CARD", totalBytes: 67_154_040 },
+  en: { locale: "en", id: "piper-en-ljspeech-medium", version: "1", name: "English · LJSpeech", engine: "Piper VITS", license: "MIT model · public-domain corpus", licenseUrl: "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD", totalBytes: 67_169_893 },
+  ko: { locale: "ko", id: "supertonic-3-int8-2026-05-11", version: "2026-05-11", name: "Supertonic 3 multilingual", engine: "Supertonic 3", license: "OpenRAIL-M", licenseUrl: "https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE", totalBytes: 128_774_318 },
+  ja: { locale: "ja", id: "supertonic-3-int8-2026-05-11", version: "2026-05-11", name: "Supertonic 3 multilingual", engine: "Supertonic 3", license: "OpenRAIL-M", licenseUrl: "https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE", totalBytes: 128_774_318 },
+};
+
+function missingVoicePack(locale: Locale): VoicePackStatus {
+  return { ...VOICE_PACK_META[locale], state: "missing", downloadedBytes: 0, error: null };
+}
 
 function isTauriRuntime(): boolean {
   return "__TAURI_INTERNALS__" in window;
@@ -60,22 +83,27 @@ function saveBrowserSnapshot(snapshot: AppSnapshot): AppSnapshot {
 function overlayFromQuery(): EpisodePlan {
   const params = new URLSearchParams(window.location.search);
   const eventId = params.get("eventId") ?? "browser-preview";
+  const requestedPet = params.get("pet");
+  const petId = BUDDIES.some((buddy) => buddy.id === requestedPet)
+    ? requestedPet as EpisodePlan["petId"]
+    : DEFAULT_BUDDY_ID;
+  const defaultAction = BUDDIES.find((buddy) => buddy.id === petId)?.actions[0] ?? DEFAULT_BUDDY_ACTION_ID;
   return {
     eventId,
     trigger: params.get("trigger") === "tutorial" ? "tutorial" : "manual",
-    petId:
-      params.get("pet") === "camel7" ||
-      params.get("pet") === "memeCat" ||
-      params.get("pet") === "shiba"
-        ? (params.get("pet") as EpisodePlan["petId"])
-        : "goat10",
-    actionId: params.get("action") ?? "headbutt",
+    petId,
+    actionId: params.get("action") ?? defaultAction,
+    lineKey: params.get("lineKey") ?? "signature-start",
     monitorId: "browser",
     anchorRect: { x: 0, y: 0, width: 360, height: 300 },
+    motionPath: [{ x: -260, y: 0, width: 360, height: 300 }, { x: 0, y: 0, width: 360, height: 300 }],
+    introDurationMs: 2_000,
     captureRect: null,
     locale: "vi",
     tone: params.get("tone") === "sassy" ? "sassy" : "kind",
     seed: 10,
+    reduceMotion: params.get("reduceMotion") === "true",
+    powerSaver: params.get("powerSaver") === "true",
     line: params.get("line") ?? undefined,
   };
 }
@@ -100,8 +128,14 @@ export interface DesktopBridge {
   captureRegion(request: CaptureRegionRequest): Promise<ArrayBuffer | Uint8Array | null>;
   sendRendererEvent(event: RendererEvent): Promise<void>;
   setPetMenuOpen(open: boolean): Promise<void>;
+  getVoicePackStatus(locale: Locale): Promise<VoicePackStatus>;
+  installVoicePack(locale: Locale): Promise<VoicePackStatus>;
+  speakDialogue(request: SpeakDialogueRequest): Promise<boolean>;
+  stopDialogue(): Promise<void>;
   subscribeOverlay(callback: (plan: EpisodePlan | null) => void): Promise<UnlistenFn>;
   subscribeSnapshot(callback: (snapshot: AppSnapshot) => void): Promise<UnlistenFn>;
+  subscribeDirector(callback: (event: DirectorEvent) => void): Promise<UnlistenFn>;
+  subscribeVoicePack(callback: (status: VoicePackStatus) => void): Promise<UnlistenFn>;
 }
 
 export const desktopBridge: DesktopBridge = {
@@ -146,7 +180,19 @@ export const desktopBridge: DesktopBridge = {
   async performAction(request) {
     if (request.action === "previewSound") {
       const snapshot = lastSnapshot ?? browserSnapshot();
-      playBuddySfx(request.petId ?? snapshot.settings.selectedPets[0] ?? "goat10", snapshot.settings.soundVolume);
+      playBuddySfx(request.petId ?? snapshot.settings.selectedPets[0] ?? DEFAULT_BUDDY_ID, snapshot.settings.soundVolume);
+      if (snapshot.settings.behaviorToggles.voice && request.text && request.locale) {
+        const voiceRequest = {
+          petId: request.petId ?? snapshot.settings.selectedPets[0] ?? DEFAULT_BUDDY_ID,
+          text: request.text,
+          locale: request.locale,
+          volume: snapshot.settings.soundVolume,
+        } satisfies SpeakDialogueRequest;
+        const nativeVoice = await nativeOr(COMMANDS.speakDialogue, { request: voiceRequest }, () => false);
+        if (!nativeVoice) {
+          playDialogueVoice(voiceRequest.petId, voiceRequest.text, voiceRequest.locale, voiceRequest.volume);
+        }
+      }
     }
     const next = await nativeOr(COMMANDS.action, { request }, () => {
       const snapshot = browserSnapshot();
@@ -191,6 +237,22 @@ export const desktopBridge: DesktopBridge = {
     await nativeOr<void>(COMMANDS.petMenu, { open }, () => undefined);
   },
 
+  async getVoicePackStatus(locale) {
+    return nativeOr(COMMANDS.voicePackStatus, { locale }, () => missingVoicePack(locale));
+  },
+
+  async installVoicePack(locale) {
+    return nativeOr(COMMANDS.installVoicePack, { locale }, () => ({ ...missingVoicePack(locale), state: "error", error: "desktopOnly" }));
+  },
+
+  async speakDialogue(request) {
+    return nativeOr(COMMANDS.speakDialogue, { request }, () => false);
+  },
+
+  async stopDialogue() {
+    await nativeOr<void>(COMMANDS.stopDialogue, {}, () => undefined);
+  },
+
   async subscribeOverlay(callback) {
     if (isTauriRuntime()) {
       const offPlan = await listen<EpisodePlan>(EVENTS.plan, (event) => callback(event.payload));
@@ -211,5 +273,15 @@ export const desktopBridge: DesktopBridge = {
       lastSnapshot = event.payload;
       callback(event.payload);
     });
+  },
+
+  async subscribeDirector(callback) {
+    if (!isTauriRuntime()) return () => undefined;
+    return listen<DirectorEvent>(EVENTS.director, (event) => callback(event.payload));
+  },
+
+  async subscribeVoicePack(callback) {
+    if (!isTauriRuntime()) return () => undefined;
+    return listen<VoicePackStatus>(EVENTS.voicePack, (event) => callback(event.payload));
   },
 };

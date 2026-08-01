@@ -227,9 +227,20 @@ export function ImmersiveCanvas({ plan, onReady, onFallback }: ImmersiveCanvasPr
       gl.clearColor(0, 0, 0, 0);
       onReady();
 
-      const startedAt = performance.now();
+      const startedAt = performance.now() + plan.introDurationMs;
+      let lastRenderedAt = Number.NEGATIVE_INFINITY;
       const draw = (now: number) => {
         if (disposed || !gl || !program || gl.isContextLost()) return;
+        if (now < startedAt) {
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          animationFrame = requestAnimationFrame(draw);
+          return;
+        }
+        if (plan.powerSaver && now - lastRenderedAt < 1_000 / 30) {
+          animationFrame = requestAnimationFrame(draw);
+          return;
+        }
+        lastRenderedAt = now;
         const progress = Math.min(1, (now - startedAt) / EFFECT_DURATION_MS);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.uniform1f(gl.getUniformLocation(program, "u_time"), progress);

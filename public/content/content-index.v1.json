@@ -15,6 +15,6 @@
   },
   "assets": {
     "status": "contract-ready",
-    "note": "Rive and audio binaries are supplied by the art pipeline and validated against actions.v1.json before packaging."
+    "note": "Free Motion Rig masters and audio cues are validated against actions.v1.json before packaging; no paid runtime export is required."
   }
 }

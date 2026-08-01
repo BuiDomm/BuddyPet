@@ -1,6 +1,8 @@
-import type { CSSProperties } from "react";
-import { BUDDIES } from "../features/domain/defaults";
+import { useEffect, type CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
+import { BUDDIES, DEFAULT_BUDDY } from "../features/domain/defaults";
 import type { BuddyId } from "../features/domain/types";
+import { BuddyImageRig } from "./BuddyImageRig";
 
 export type BuddyMood = "idle" | "enter" | "startled" | "happy" | "petted" | "dragging" | "prank" | "exit";
 
@@ -10,6 +12,10 @@ interface BuddyCharacterProps {
   size?: "tiny" | "small" | "medium" | "large" | "stage";
   decorative?: boolean;
   className?: string;
+  actionId?: string;
+  reduceMotion?: boolean;
+  onRigReady?: (ready: boolean) => void;
+  onMarker?: (marker: string) => void;
 }
 
 function Goat() {
@@ -111,20 +117,28 @@ function Shiba() {
   );
 }
 
-export function BuddyCharacter({ buddyId, mood = "idle", size = "medium", decorative = false, className = "" }: BuddyCharacterProps) {
-  const buddy = BUDDIES.find((item) => item.id === buddyId) ?? BUDDIES[0]!;
+export function BuddyCharacter({ buddyId, mood = "idle", size = "medium", decorative = false, className = "", actionId, reduceMotion, onRigReady }: BuddyCharacterProps) {
+  const { t } = useTranslation();
+  const buddy = BUDDIES.find((item) => item.id === buddyId) ?? DEFAULT_BUDDY;
+  const label = t(`pets.${buddy.id}.name`, { defaultValue: buddy.name });
+  const actionClass = actionId ? `action-${actionId.replace(/[^a-zA-Z0-9_-]/g, "")}` : "";
   const style = {
     "--buddy-accent": buddy.accent,
     "--buddy-soft-accent": buddy.softAccent,
   } as CSSProperties;
 
+  useEffect(() => {
+    // The free rig uses the stage timeline for synchronized procedural SFX.
+    onRigReady?.(false);
+  }, [buddyId, onRigReady]);
+
   return (
-    <div className={`buddy-character buddy-character--${size} mood-${mood} ${className}`} style={style}>
+    <div className={`buddy-character buddy-character--${size} mood-${mood} uses-free-rig ${reduceMotion ? "is-reduced-motion" : ""} ${actionClass} ${className}`} data-motion-engine="free-rig-v1" style={style} role={decorative ? undefined : "img"} aria-hidden={decorative || undefined} aria-label={decorative ? undefined : label}>
+      <BuddyImageRig buddyId={buddyId} decorative label={label}/>
       <svg
+        className="buddy-svg-layer"
         viewBox="0 0 240 220"
-        role={decorative ? undefined : "img"}
-        aria-hidden={decorative || undefined}
-        aria-label={decorative ? undefined : buddy.name}
+        aria-hidden="true"
       >
         {buddyId === "goat10" && <Goat />}
         {buddyId === "camel7" && <Camel />}

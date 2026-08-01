@@ -13,10 +13,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc -b --pretty false"
+    "typecheck": "tsc -b --pretty false",
+    "check:assets": "node scripts/validate-buddy-assets.mjs"
   },
   "dependencies": {
-    "@rive-app/react-webgl2": "4.30.0",
     "@tauri-apps/api": "2.11.1",
     "@tauri-apps/plugin-autostart": "2.5.1",
     "@tauri-apps/plugin-global-shortcut": "2.3.2",

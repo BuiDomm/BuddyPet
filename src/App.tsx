@@ -1,4 +1,5 @@
 import { BuddyCharacter } from "./components/BuddyCharacter";
+import { useTranslation } from "react-i18next";
 import { BubbleOverlay } from "./features/overlay/BubbleOverlay";
 import { EffectOverlay } from "./features/overlay/EffectOverlay";
 import { PetStage } from "./features/overlay/PetStage";
@@ -7,6 +8,7 @@ import { SettingsApp } from "./features/settings/SettingsApp";
 import { useBuddyApp } from "./hooks/useBuddyApp";
 import { useOverlayPlan } from "./hooks/useOverlayPlan";
 import { useWindowRole } from "./hooks/useWindowRole";
+import { DEFAULT_BUDDY_ID } from "./features/domain/types";
 
 function OverlayRouter({ role }: { role: "pet-stage" | "bubble" | "effect" }) {
   const plan = useOverlayPlan();
@@ -17,11 +19,12 @@ function OverlayRouter({ role }: { role: "pet-stage" | "bubble" | "effect" }) {
 }
 
 function LoadingScreen() {
+  const { t } = useTranslation();
   return (
-    <main className="loading-screen" aria-label="BuddyPet is waking up">
-      <BuddyCharacter buddyId="goat10" size="medium" mood="enter" decorative />
+    <main className="loading-screen" aria-label={t("onboarding.waking", { defaultValue: "Waking your buddy…" })}>
+      <BuddyCharacter buddyId={DEFAULT_BUDDY_ID} size="medium" mood="enter" decorative />
       <div><span/><span/><span/></div>
-      <p>Waking BuddyPet…</p>
+      <p>{t("onboarding.waking", { defaultValue: "Waking your buddy…" })}</p>
     </main>
   );
 }
@@ -39,7 +42,12 @@ export default function App() {
         initialSettings={app.snapshot.settings}
         capturePermission={app.snapshot.runtime.capturePermission}
         onAction={app.performAction}
-        onComplete={(settings) => app.persist(settings, true)}
+        onComplete={async (settings) => {
+          const saved = await app.persist(settings, true);
+          if (saved) {
+            await app.performAction({ action: "previewAction", petId: settings.selectedPets[0] ?? DEFAULT_BUDDY_ID });
+          }
+        }}
       />
     );
   }

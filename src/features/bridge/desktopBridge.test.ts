@@ -10,7 +10,7 @@ describe("desktopBridge browser fallback", () => {
   it("returns a complete settings snapshot without Tauri", async () => {
     const snapshot = await desktopBridge.getSnapshot();
     expect(snapshot.settings.schemaVersion).toBe(1);
-    expect(snapshot.settings.selectedPets).toEqual(["goat10"]);
+    expect(snapshot.settings.selectedPets).toEqual(["memeCat"]);
     expect(snapshot.settings.quietHours.startMinute).toBe(1320);
   });
 
@@ -30,5 +30,23 @@ describe("desktopBridge browser fallback", () => {
     expect(await desktopBridge.getWindowRole()).toBe("effect");
     const plan = await desktopBridge.getOverlayPayload();
     expect(plan).toMatchObject({ petId: "shiba", actionId: "dig", trigger: "manual" });
+  });
+
+  it("uses Meme Cat and its signature action for a default browser preview", async () => {
+    const plan = await desktopBridge.getOverlayPayload();
+    expect(plan).toMatchObject({ petId: "memeCat", actionId: "slap" });
+  });
+
+  it("selects a different offline voice package for the active locale", async () => {
+    const vietnamese = await desktopBridge.getVoicePackStatus("vi");
+    const english = await desktopBridge.getVoicePackStatus("en");
+    const korean = await desktopBridge.getVoicePackStatus("ko");
+    const japanese = await desktopBridge.getVoicePackStatus("ja");
+
+    expect(vietnamese).toMatchObject({ locale: "vi", engine: "Piper VITS", id: "piper-vi-vais1000-medium" });
+    expect(english).toMatchObject({ locale: "en", engine: "Piper VITS", id: "piper-en-ljspeech-medium" });
+    expect(korean.id).toBe(japanese.id);
+    expect(korean.engine).toBe("Supertonic 3");
+    expect(vietnamese.totalBytes).toBeLessThan(korean.totalBytes);
   });
 });

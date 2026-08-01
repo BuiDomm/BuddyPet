@@ -1,9 +1,9 @@
-import type { AppSnapshot, BuddyDefinition, SettingsV1 } from "./types";
+import { DEFAULT_BUDDY_ID, type AppSnapshot, type BuddyDefinition, type SettingsV1 } from "./types";
 
 export const DEFAULT_SETTINGS: SettingsV1 = {
   schemaVersion: 1,
   locale: "vi",
-  selectedPets: ["goat10"],
+  selectedPets: [DEFAULT_BUDDY_ID],
   tone: "kind",
   intensity: "playful",
   quietHours: { enabled: true, startMinute: 22 * 60, endMinute: 8 * 60 },
@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS: SettingsV1 = {
     coverContent: true,
     cursorPlay: true,
     sfx: true,
+    voice: true,
   },
   onboardingCompleted: false,
   hotkey: "Control+Alt+B",
@@ -74,6 +75,9 @@ export const BUDDIES: readonly BuddyDefinition[] = [
     actions: ["tug", "dig", "zoomies"],
   },
 ] as const;
+
+export const DEFAULT_BUDDY = BUDDIES.find((buddy) => buddy.id === DEFAULT_BUDDY_ID)!;
+export const DEFAULT_BUDDY_ACTION_ID = DEFAULT_BUDDY.actions[0] ?? "slap";
 
 export const INTENSITY_META = {
   gentle: {

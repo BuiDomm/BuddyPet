@@ -27,10 +27,10 @@ pub enum ManifestError {
     NoTriggers { action_id: String },
     #[error("action `{action_id}` duration must be in 1..=12000ms")]
     InvalidDuration { action_id: String },
-    #[error("action `{action_id}` is missing its Rive artboard")]
-    MissingArtboard { action_id: String },
-    #[error("action `{action_id}` is missing its Rive state machine")]
-    MissingStateMachine { action_id: String },
+    #[error("action `{action_id}` is missing its motion rig")]
+    MissingMotionRig { action_id: String },
+    #[error("action `{action_id}` is missing its motion controller")]
+    MissingMotionController { action_id: String },
     #[error("action `{action_id}` is missing a localized line key")]
     MissingLineKey { action_id: String },
     #[error("action `{action_id}` references unknown line key `{line_key}`")]
@@ -43,6 +43,8 @@ pub enum ManifestError {
     EmptyHitPose { action_id: String, index: usize },
     #[error("action `{action_id}` hit region {index} must be a non-zero polygon")]
     InvalidHitPolygon { action_id: String, index: usize },
+    #[error("action `{action_id}` hit region {index} must stay within normalized 0..=1000 bounds")]
+    HitPolygonOutOfBounds { action_id: String, index: usize },
 }
 
 impl ActionManifest {
@@ -67,11 +69,11 @@ impl ActionManifest {
         if !(1..=12_000).contains(&self.duration_ms) {
             return Err(ManifestError::InvalidDuration { action_id });
         }
-        if self.rive_artboard.trim().is_empty() {
-            return Err(ManifestError::MissingArtboard { action_id });
+        if self.motion_rig.trim().is_empty() {
+            return Err(ManifestError::MissingMotionRig { action_id });
         }
-        if self.state_machine.trim().is_empty() {
-            return Err(ManifestError::MissingStateMachine { action_id });
+        if self.motion_controller.trim().is_empty() {
+            return Err(ManifestError::MissingMotionController { action_id });
         }
         if self.line_key.trim().is_empty() {
             return Err(ManifestError::MissingLineKey { action_id });
@@ -85,6 +87,13 @@ impl ActionManifest {
             }
             if region.polygon.len() < 3 || !polygon_has_area(&region.polygon) {
                 return Err(ManifestError::InvalidHitPolygon { action_id, index });
+            }
+            if region
+                .polygon
+                .iter()
+                .any(|point| !(0..=1_000).contains(&point.x) || !(0..=1_000).contains(&point.y))
+            {
+                return Err(ManifestError::HitPolygonOutOfBounds { action_id, index });
             }
         }
         Ok(())
@@ -176,8 +185,8 @@ mod tests {
             trigger_tags: vec![TriggerTag::Random],
             category: BehaviorCategory::FakeDamage,
             duration_ms: 8_000,
-            rive_artboard: "Goat".into(),
-            state_machine: "Buddy".into(),
+            motion_rig: "Goat".into(),
+            motion_controller: "FreeMotionDirector".into(),
             inputs: Vec::new(),
             markers: Vec::new(),
             hit_regions: vec![HitRegion {
@@ -205,6 +214,16 @@ mod tests {
         assert!(matches!(
             action.validate_structure(),
             Err(ManifestError::InvalidHitPolygon { .. })
+        ));
+    }
+
+    #[test]
+    fn structure_rejects_hit_polygons_outside_normalized_bounds() {
+        let mut action = valid_action();
+        action.hit_regions[0].polygon[0].x = 1_001;
+        assert!(matches!(
+            action.validate_structure(),
+            Err(ManifestError::HitPolygonOutOfBounds { .. })
         ));
     }
 
