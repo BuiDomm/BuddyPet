@@ -1,0 +1,987 @@
+{
+  "schemaVersion": 1,
+  "actions": [
+    {
+      "schemaVersion": 1,
+      "id": "goat-headbutt-crack",
+      "petIds": [
+        "goat10"
+      ],
+      "triggerTags": [
+        "focus",
+        "random",
+        "manual",
+        "tutorial"
+      ],
+      "category": "fakeDamage",
+      "durationMs": 7200,
+      "riveArtboard": "Goat10",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "headbutt",
+        "reduceMotion"
+      ],
+      "markers": [
+        "impact",
+        "effect-clear"
+      ],
+      "hitRegions": [
+        {
+          "pose": "enter",
+          "polygon": [
+            {
+              "x": 180,
+              "y": 180
+            },
+            {
+              "x": 780,
+              "y": 120
+            },
+            {
+              "x": 920,
+              "y": 720
+            },
+            {
+              "x": 350,
+              "y": 940
+            },
+            {
+              "x": 80,
+              "y": 580
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "goat-impact",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "goat-nibble-corner",
+      "petIds": [
+        "goat10"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "coverContent",
+      "durationMs": 7600,
+      "riveArtboard": "Goat10",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "nibble",
+        "edge"
+      ],
+      "markers": [
+        "bite",
+        "release"
+      ],
+      "hitRegions": [
+        {
+          "pose": "nibble",
+          "polygon": [
+            {
+              "x": 140,
+              "y": 200
+            },
+            {
+              "x": 760,
+              "y": 100
+            },
+            {
+              "x": 940,
+              "y": 640
+            },
+            {
+              "x": 440,
+              "y": 950
+            },
+            {
+              "x": 80,
+              "y": 650
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "goat-nibble",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "goat-dribble-celebrate",
+      "petIds": [
+        "goat10"
+      ],
+      "triggerTags": [
+        "random",
+        "manual",
+        "tutorial"
+      ],
+      "category": "cursorPlay",
+      "durationMs": 9000,
+      "riveArtboard": "Goat10",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "dribble",
+        "ballTargetX"
+      ],
+      "markers": [
+        "ball-tap-1",
+        "ball-tap-2",
+        "celebrate"
+      ],
+      "hitRegions": [
+        {
+          "pose": "dribble",
+          "polygon": [
+            {
+              "x": 200,
+              "y": 80
+            },
+            {
+              "x": 720,
+              "y": 80
+            },
+            {
+              "x": 900,
+              "y": 780
+            },
+            {
+              "x": 460,
+              "y": 980
+            },
+            {
+              "x": 100,
+              "y": 680
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "ball-tap",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "camel-neck-stretch",
+      "petIds": [
+        "camel7"
+      ],
+      "triggerTags": [
+        "focus",
+        "random",
+        "manual",
+        "tutorial"
+      ],
+      "category": "coverContent",
+      "durationMs": 7800,
+      "riveArtboard": "Camel7",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "neckStretch",
+        "stretchAmount"
+      ],
+      "markers": [
+        "stretch-start",
+        "release"
+      ],
+      "hitRegions": [
+        {
+          "pose": "stretch",
+          "polygon": [
+            {
+              "x": 180,
+              "y": 40
+            },
+            {
+              "x": 680,
+              "y": 20
+            },
+            {
+              "x": 880,
+              "y": 820
+            },
+            {
+              "x": 420,
+              "y": 980
+            },
+            {
+              "x": 100,
+              "y": 700
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "camel-grumble",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "camel-chew-fold",
+      "petIds": [
+        "camel7"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "coverContent",
+      "durationMs": 8200,
+      "riveArtboard": "Camel7",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "chew",
+        "edge"
+      ],
+      "markers": [
+        "bite",
+        "fold-release"
+      ],
+      "hitRegions": [
+        {
+          "pose": "chew",
+          "polygon": [
+            {
+              "x": 160,
+              "y": 50
+            },
+            {
+              "x": 720,
+              "y": 40
+            },
+            {
+              "x": 900,
+              "y": 760
+            },
+            {
+              "x": 480,
+              "y": 980
+            },
+            {
+              "x": 80,
+              "y": 620
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "camel-chew",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "camel-spit-wipe",
+      "petIds": [
+        "camel7"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "fakeDamage",
+      "durationMs": 8600,
+      "riveArtboard": "Camel7",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "spitWipe",
+        "reduceMotion"
+      ],
+      "markers": [
+        "spit",
+        "wipe",
+        "effect-clear"
+      ],
+      "hitRegions": [
+        {
+          "pose": "spit",
+          "polygon": [
+            {
+              "x": 170,
+              "y": 30
+            },
+            {
+              "x": 740,
+              "y": 50
+            },
+            {
+              "x": 910,
+              "y": 740
+            },
+            {
+              "x": 480,
+              "y": 980
+            },
+            {
+              "x": 80,
+              "y": 660
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "camel-spit",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "cat-card-slap",
+      "petIds": [
+        "memeCat"
+      ],
+      "triggerTags": [
+        "focus",
+        "random",
+        "manual",
+        "tutorial"
+      ],
+      "category": "coverContent",
+      "durationMs": 7000,
+      "riveArtboard": "MemeCat",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "cardSlap",
+        "pawSide"
+      ],
+      "markers": [
+        "slap",
+        "card-clear"
+      ],
+      "hitRegions": [
+        {
+          "pose": "slap",
+          "polygon": [
+            {
+              "x": 120,
+              "y": 180
+            },
+            {
+              "x": 790,
+              "y": 120
+            },
+            {
+              "x": 940,
+              "y": 720
+            },
+            {
+              "x": 520,
+              "y": 940
+            },
+            {
+              "x": 80,
+              "y": 680
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "cat-slap",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "cat-image-scratch",
+      "petIds": [
+        "memeCat"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "fakeDamage",
+      "durationMs": 7600,
+      "riveArtboard": "MemeCat",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "scratch",
+        "scratchCount"
+      ],
+      "markers": [
+        "scratch-1",
+        "scratch-2",
+        "effect-clear"
+      ],
+      "hitRegions": [
+        {
+          "pose": "scratch",
+          "polygon": [
+            {
+              "x": 120,
+              "y": 200
+            },
+            {
+              "x": 780,
+              "y": 100
+            },
+            {
+              "x": 930,
+              "y": 720
+            },
+            {
+              "x": 520,
+              "y": 950
+            },
+            {
+              "x": 70,
+              "y": 680
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "cat-scratch",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "cat-cursor-loaf",
+      "petIds": [
+        "memeCat"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "cursorPlay",
+      "durationMs": 8500,
+      "riveArtboard": "MemeCat",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "loaf",
+        "lookX"
+      ],
+      "markers": [
+        "settle",
+        "stand"
+      ],
+      "hitRegions": [
+        {
+          "pose": "loaf",
+          "polygon": [
+            {
+              "x": 80,
+              "y": 300
+            },
+            {
+              "x": 800,
+              "y": 220
+            },
+            {
+              "x": 950,
+              "y": 720
+            },
+            {
+              "x": 700,
+              "y": 920
+            },
+            {
+              "x": 150,
+              "y": 880
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "cat-loaf",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shiba-tug-strip",
+      "petIds": [
+        "shiba"
+      ],
+      "triggerTags": [
+        "focus",
+        "random",
+        "manual",
+        "tutorial"
+      ],
+      "category": "coverContent",
+      "durationMs": 7900,
+      "riveArtboard": "ShibaInu",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "tug",
+        "tugAmount"
+      ],
+      "markers": [
+        "bite",
+        "release"
+      ],
+      "hitRegions": [
+        {
+          "pose": "tug",
+          "polygon": [
+            {
+              "x": 100,
+              "y": 160
+            },
+            {
+              "x": 760,
+              "y": 100
+            },
+            {
+              "x": 940,
+              "y": 680
+            },
+            {
+              "x": 580,
+              "y": 950
+            },
+            {
+              "x": 80,
+              "y": 700
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "shiba-tug",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shiba-dig-ui",
+      "petIds": [
+        "shiba"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "fakeDamage",
+      "durationMs": 8200,
+      "riveArtboard": "ShibaInu",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "dig",
+        "particleLevel"
+      ],
+      "markers": [
+        "dig-1",
+        "dig-2",
+        "effect-clear"
+      ],
+      "hitRegions": [
+        {
+          "pose": "dig",
+          "polygon": [
+            {
+              "x": 100,
+              "y": 140
+            },
+            {
+              "x": 780,
+              "y": 100
+            },
+            {
+              "x": 940,
+              "y": 700
+            },
+            {
+              "x": 560,
+              "y": 960
+            },
+            {
+              "x": 80,
+              "y": 680
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "shiba-dig",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shiba-zoomies",
+      "petIds": [
+        "shiba"
+      ],
+      "triggerTags": [
+        "random",
+        "manual"
+      ],
+      "category": "cursorPlay",
+      "durationMs": 9200,
+      "riveArtboard": "ShibaInu",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "zoomies",
+        "targetX"
+      ],
+      "markers": [
+        "run-start",
+        "turn",
+        "run-stop"
+      ],
+      "hitRegions": [
+        {
+          "pose": "run",
+          "polygon": [
+            {
+              "x": 80,
+              "y": 150
+            },
+            {
+              "x": 800,
+              "y": 120
+            },
+            {
+              "x": 940,
+              "y": 720
+            },
+            {
+              "x": 560,
+              "y": 960
+            },
+            {
+              "x": 60,
+              "y": 680
+            }
+          ]
+        }
+      ],
+      "lineKey": "signature-start",
+      "sfxCue": "shiba-zoom",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shared-edge-peek",
+      "petIds": [
+        "goat10",
+        "camel7",
+        "memeCat",
+        "shiba"
+      ],
+      "triggerTags": [
+        "random",
+        "manual",
+        "shared"
+      ],
+      "category": "ambient",
+      "durationMs": 6200,
+      "riveArtboard": "SharedBuddy",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "peek",
+        "edge"
+      ],
+      "markers": [
+        "peek",
+        "hide"
+      ],
+      "hitRegions": [
+        {
+          "pose": "peek",
+          "polygon": [
+            {
+              "x": 120,
+              "y": 140
+            },
+            {
+              "x": 840,
+              "y": 120
+            },
+            {
+              "x": 940,
+              "y": 780
+            },
+            {
+              "x": 220,
+              "y": 900
+            }
+          ]
+        }
+      ],
+      "lineKey": "greeting",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shared-corner-nap",
+      "petIds": [
+        "goat10",
+        "camel7",
+        "memeCat",
+        "shiba"
+      ],
+      "triggerTags": [
+        "random",
+        "manual",
+        "shared"
+      ],
+      "category": "ambient",
+      "durationMs": 10000,
+      "riveArtboard": "SharedBuddy",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "nap",
+        "breathAmount"
+      ],
+      "markers": [
+        "settle",
+        "wake"
+      ],
+      "hitRegions": [
+        {
+          "pose": "nap",
+          "polygon": [
+            {
+              "x": 60,
+              "y": 340
+            },
+            {
+              "x": 880,
+              "y": 250
+            },
+            {
+              "x": 960,
+              "y": 800
+            },
+            {
+              "x": 180,
+              "y": 920
+            }
+          ]
+        }
+      ],
+      "lineKey": "late-night",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shared-break-ticket",
+      "petIds": [
+        "goat10",
+        "camel7",
+        "memeCat",
+        "shiba"
+      ],
+      "triggerTags": [
+        "focus",
+        "manual",
+        "tutorial",
+        "shared"
+      ],
+      "category": "ambient",
+      "durationMs": 7000,
+      "riveArtboard": "SharedBuddy",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "breakTicket"
+      ],
+      "markers": [
+        "ticket-show",
+        "ticket-hide"
+      ],
+      "hitRegions": [
+        {
+          "pose": "offer",
+          "polygon": [
+            {
+              "x": 100,
+              "y": 120
+            },
+            {
+              "x": 800,
+              "y": 100
+            },
+            {
+              "x": 940,
+              "y": 820
+            },
+            {
+              "x": 180,
+              "y": 940
+            }
+          ]
+        }
+      ],
+      "lineKey": "break-offer",
+      "sfxCue": "paper-pop",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shared-sticky-note",
+      "petIds": [
+        "goat10",
+        "camel7",
+        "memeCat",
+        "shiba"
+      ],
+      "triggerTags": [
+        "focus",
+        "random",
+        "manual",
+        "shared"
+      ],
+      "category": "ambient",
+      "durationMs": 6500,
+      "riveArtboard": "SharedBuddy",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "stickyNote"
+      ],
+      "markers": [
+        "note-show",
+        "note-hide"
+      ],
+      "hitRegions": [
+        {
+          "pose": "note",
+          "polygon": [
+            {
+              "x": 100,
+              "y": 100
+            },
+            {
+              "x": 820,
+              "y": 100
+            },
+            {
+              "x": 920,
+              "y": 840
+            },
+            {
+              "x": 160,
+              "y": 940
+            }
+          ]
+        }
+      ],
+      "lineKey": "focus-nudge",
+      "sfxCue": "paper-pop",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "shared-confetti-pop",
+      "petIds": [
+        "goat10",
+        "camel7",
+        "memeCat",
+        "shiba"
+      ],
+      "triggerTags": [
+        "random",
+        "manual",
+        "tutorial",
+        "shared"
+      ],
+      "category": "ambient",
+      "durationMs": 6000,
+      "riveArtboard": "SharedBuddy",
+      "stateMachine": "BuddyDirector",
+      "inputs": [
+        "confetti",
+        "particleLevel"
+      ],
+      "markers": [
+        "pop",
+        "particles-clear"
+      ],
+      "hitRegions": [
+        {
+          "pose": "celebrate",
+          "polygon": [
+            {
+              "x": 120,
+              "y": 100
+            },
+            {
+              "x": 800,
+              "y": 100
+            },
+            {
+              "x": 940,
+              "y": 780
+            },
+            {
+              "x": 180,
+              "y": 940
+            }
+          ]
+        }
+      ],
+      "lineKey": "prank-success",
+      "sfxCue": "confetti-pop",
+      "dismissPolicy": {
+        "firstClickRelocates": true,
+        "secondClickWindowMs": 8000,
+        "longPressMs": 700
+      }
+    }
+  ]
+}

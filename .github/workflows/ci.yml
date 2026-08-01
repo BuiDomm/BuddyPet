@@ -1,0 +1,41 @@
+name: desktop-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy,rustfmt
+      - name: Install JavaScript dependencies
+        run: npm ci
+      - name: Validate frontend and content
+        run: npm run typecheck && npm run lint && npm test && npm run build
+      - name: Check Rust formatting
+        working-directory: src-tauri
+        run: cargo fmt -- --check
+      - name: Test Rust core and capture bounds
+        working-directory: src-tauri
+        run: cargo test --lib
+      - name: Lint native shell
+        working-directory: src-tauri
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Compile packaged desktop binary
+        run: npx tauri build --debug --no-bundle --ci
+

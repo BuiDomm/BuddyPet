@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "actionCatalog": "/content/actions.v1.json",
+  "localizationContract": "/content/localization-contract.v1.json",
+  "sfxCatalog": "/content/sfx-cues.v1.json",
+  "dialogue": {
+    "intentCountPerPet": 24,
+    "tones": ["kind", "sassy"],
+    "locales": {
+      "vi": { "bundled": true, "nativeReview": "required" },
+      "en": { "bundled": true, "nativeReview": "required" },
+      "ko": { "bundled": true, "nativeReview": "required" },
+      "ja": { "bundled": true, "nativeReview": "required" }
+    }
+  },
+  "assets": {
+    "status": "contract-ready",
+    "note": "Rive and audio binaries are supplied by the art pipeline and validated against actions.v1.json before packaging."
+  }
+}
